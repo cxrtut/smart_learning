@@ -3,3 +3,29 @@ export interface OnboardingState {
     gradeRange: string;
     subjects: string[];
 }
+
+export const grade1_3Subjects = [
+    {subject: 'Numeracy', id: '1'},
+    {subject: 'Literacy', id: '2'},
+    {subject: 'Life Skills', id: '3'},
+]
+
+export const grade4_6Subjects = [
+    {subject: 'Mathematics', id: '1'},
+    {subject: 'English', id: '2'},
+    {subject: 'Life Orientation', id: '3'},
+    {subject: 'Social Science', id: '4'},
+    {subject: 'Natural Sciences and Technology', id: '5'},
+]
+
+export const grade7Subjects = [
+    {subject: "Home Language", id: "1"},
+    {subject: "First additional language", id: "2"},
+    {subject: "Mathematics", id: "3"},
+    {subject: "Natural Sciences", id: "4"},
+    {subject: "Social Sciences", id: "5"},
+    {subject: "Technology", id: "6"},
+    {subject: "Economic Management Sciences", id: "7"},
+    {subject:"Life Orientation", id: "8"},
+    {subject: "Creative Arts", id: "9"},
+]
