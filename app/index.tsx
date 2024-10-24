@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { Image, StyleSheet } from 'react-native';
 
 const SplashScreen = () => {
-  const router = useRouter(); // Correct import for expo-router
+  const router = useRouter(); 
   
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.PRIMARY }]}>
@@ -22,7 +22,7 @@ const SplashScreen = () => {
         resizeMode="cover"
       />
 
-      {/* Bottom Text Section */}
+      
       <View style={styles.bottomTextContainer}>
         <Text style={styles.mainText}>
           Learn Anything, Anytime, Anywhere
@@ -32,10 +32,10 @@ const SplashScreen = () => {
         </Text>
       </View>
 
-      {/* Button Section */}
+    
       <TouchableOpacity
         style={styles.button}
-        onPress={() => router.push('/(auth)/SignIn')} // Using expo-router navigation
+        onPress={() => router.push('/(auth)/SignIn')} 
       >
         <Text style={styles.buttonText}>Get Started</Text>
       </TouchableOpacity>
@@ -60,10 +60,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   image: {
-    width: 280, 
-    height: 300, 
+    width: 400, 
+    height: 400, 
     alignSelf: 'center', 
-    marginLeft: -20,
+    marginLeft: -30,
   },
   bottomTextContainer: {
     alignItems: 'center',
