@@ -1,102 +1,48 @@
-import { View, Text, TouchableOpacity } from 'react-native'
-import React from 'react'
-import { useRouter } from 'expo-router'
-import colors from '@/constants/colors'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { Image, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
+import React from 'react';
+import { useRouter } from 'expo-router';
+import colors from '@/constants/colors';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import tw from 'tailwind-react-native-classnames'; // Import tailwind
 
 const SplashScreen = () => {
-  const router = useRouter(); 
-  
+  const router = useRouter();
+
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.PRIMARY }]}>
+    <SafeAreaView style={[tw`flex-1 justify-between p-4`, { backgroundColor: colors.PRIMARY }]}>
       {/* Top Text Section */}
-      <View style={styles.topTextContainer}>
-        <Text style={styles.titleText}>Smart Learning</Text>
+      <View style={tw`w-full pl-5`}>
+        <Text style={tw`text-white text-2xl font-bold`}>Smart Learning</Text>
       </View>
 
       {/* Image Section */}
       <Image
         source={require('../assets/images/onboarding13.png')}
-        style={styles.image}
+        style={tw`w-80 h-80 self-center -ml-8`} 
         resizeMode="cover"
       />
 
-      
-      <View style={styles.bottomTextContainer}>
-        <Text style={styles.mainText}>
+      {/* Bottom Text Section */}
+      <View style={tw`items-center px-5 mb-8`}>
+        <Text style={tw`text-white text-lg font-bold text-center`}>
           Learn Anything, Anytime, Anywhere
         </Text>
-        <Text style={styles.subText}>
+        <Text style={tw`text-white text-xs mt-2 text-center`}>
           Learning just a click away, Online learning is education that takes place over the internet.
         </Text>
       </View>
 
-    
+      {/* Button Section */}
       <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.push('/(auth)/SignIn')} 
+        style={tw`bg-white py-4 px-20 rounded-full self-center mb-10 w-3/4 items-center`}
+        onPress={() => router.push('/(auth)/SignIn')}
       >
-        <Text style={styles.buttonText}>Get Started</Text>
+        <Text style={[tw`font-bold text-base`, { color: colors.PRIMARY }]}>
+          Get Started
+        </Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
-}
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    justifyContent: 'space-between',
-    padding: 10,
-  },
-  topTextContainer: {
-    alignItems: 'flex-start',
-    width: '100%',
-    paddingHorizontal: 20,
-  },
-  titleText: {
-    color: 'white',
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  image: {
-    width: 400, 
-    height: 400, 
-    alignSelf: 'center', 
-    marginLeft: -30,
-  },
-  bottomTextContainer: {
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    marginBottom: 30,
-  },
-  mainText: {
-    color: 'white',
-    fontSize: 22,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  subText: {
-    color: 'white',
-    fontSize: 12,
-    marginTop: 10,
-    textAlign: 'center',
-  },
-  button: {
-    backgroundColor: 'white',
-    paddingVertical: 15,
-    paddingHorizontal: 50,
-    borderRadius: 25,
-    alignSelf: 'center',
-    marginBottom: 40,
-    width: '70%',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: colors.PRIMARY,
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-});
+};
 
 export default SplashScreen;
