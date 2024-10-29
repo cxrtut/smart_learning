@@ -1,19 +1,20 @@
-import { View, Text, TouchableOpacity } from 'react-native'
-import React from 'react'
-import { router } from 'expo-router'
-import colors from '@/constants/colors'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { View, Text, TouchableOpacity, Image } from 'react-native';
+import React from 'react';
+import { useRouter } from 'expo-router';
+import colors from '@/constants/colors';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import tw from 'tailwind-react-native-classnames'; // Import tailwind
 
 const SplashScreen = () => {
+  const router = useRouter();
+
   return (
-    <SafeAreaView style={{backgroundColor: colors.PRIMARY}} className='flex h-full items-center justify-between py-3 pb-10'>
-      <View className='flex items-start w-full'>
-        <Text 
-          className='text-start p-3 pl-5 font-semibold text-white text-2xl'
-        >
-          Smart Learning
-        </Text>
+    <SafeAreaView style={[tw`flex-1 justify-between p-4`, { backgroundColor: colors.PRIMARY }]}>
+      {/* Top Text Section */}
+      <View style={tw`w-full pl-5`}>
+        <Text style={tw`text-white text-2xl font-bold`}>Smart Learning</Text>
       </View>
+
 
       <View className='flex items-center mt-[95%]'>
         <Text 
@@ -24,25 +25,36 @@ const SplashScreen = () => {
         <Text
           className='text-center text-white text-sm mt-3 px-7'
         >
+
+      {/* Image Section */}
+      <Image
+        source={require('../assets/images/onboarding13.png')}
+        style={tw`w-80 h-80 self-center -ml-8`} 
+        resizeMode="cover"
+      />
+
+      {/* Bottom Text Section */}
+      <View style={tw`items-center px-5 mb-8`}>
+        <Text style={tw`text-white text-lg font-bold text-center`}>
+          Learn Anything, Anytime, Anywhere
+        </Text>
+        <Text style={tw`text-white text-xs mt-2 text-center`}>
+
           Learning just a click away, Online learning is education that takes place over the internet.
         </Text>
       </View>
 
+      {/* Button Section */}
       <TouchableOpacity
-        className='flex items-center justify-center bg-white px-4 p-4 rounded-full mt-[-5%] w-[70%]' 
-        onPress={() => {
-          router.push('/(auth)/SignIn')
-        }}
+        style={tw`bg-white py-4 px-20 rounded-full self-center mb-10 w-3/4 items-center`}
+        onPress={() => router.push('/(auth)/SignIn')}
       >
-        <Text
-          style={{color: colors.PRIMARY}}
-          className='font-bold text-lg'
-        >
+        <Text style={[tw`font-bold text-base`, { color: colors.PRIMARY }]}>
           Get Started
         </Text>
       </TouchableOpacity>
     </SafeAreaView>
-  )
-}
+  );
+};
 
-export default SplashScreen
+export default SplashScreen;
