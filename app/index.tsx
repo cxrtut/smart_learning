@@ -17,12 +17,12 @@ const SplashScreen = () => {
 
       <View className='flex items-center mt-[95%]'>
         <Text 
-          className='text-center text-white text-2xl px-7 font-bold'
+          className='text-center text-white text-4xl px-7 font-bold'
         >
-          Learn Any Thing Any Time Any Where
+          Learn Anything Anytime anywhere
         </Text>
         <Text
-          className='text-center text-white text-xs mt-3 px-7'
+          className='text-center text-white text-sm mt-3 px-7'
         >
           Learning just a click away, Online learning is education that takes place over the internet.
         </Text>
