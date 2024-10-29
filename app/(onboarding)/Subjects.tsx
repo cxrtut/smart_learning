@@ -5,14 +5,14 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import CustomCheckboxLabel from '@/components/CustomCheckboxLabel';
 import { useOnboarding } from '@/context/onboardingContext';
-import { getSubjectsByGrade } from '@/utils';
+import { getSubjectsByGradeAndSchool } from '@/utils';
 
 
 const Subjects = () => {
-    const {gradeRange, subjects} = useOnboarding();
+    const {gradeRange, schoolLevel} = useOnboarding();
     const [isChecked, setChecked] = useState(false);
 
-    const resultSubjects = getSubjectsByGrade(gradeRange);
+    const resultSubjects = getSubjectsByGradeAndSchool(gradeRange, schoolLevel);
 
   return (
     <SafeAreaView 

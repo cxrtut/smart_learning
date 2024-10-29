@@ -15,7 +15,6 @@ const primaryGradeLevels = [
 const secondaryGradeLevels = [
   {label: 'Grade 8 - 9', value: '1'},
   {label: 'Grade 10 - 12', value: '2'},
-  {label: 'Grade 12', value: '3'},
 ]
 
 const Grade = () => {
@@ -32,7 +31,7 @@ const Grade = () => {
         return
     }
     // TODO: Add school level to user profile
-    router.push('/(onboarding)/Subjects' as Href)
+    router.push('/(dashboard)/Home' as Href)
 }
   return (
       <SafeAreaView 
