@@ -15,6 +15,17 @@ const SplashScreen = () => {
         <Text style={tw`text-white text-2xl font-bold`}>Smart Learning</Text>
       </View>
 
+
+      <View className='flex items-center mt-[95%]'>
+        <Text 
+          className='text-center text-white text-4xl px-7 font-bold'
+        >
+          Learn Anything Anytime anywhere
+        </Text>
+        <Text
+          className='text-center text-white text-sm mt-3 px-7'
+        >
+
       {/* Image Section */}
       <Image
         source={require('../assets/images/onboarding13.png')}
@@ -28,6 +39,7 @@ const SplashScreen = () => {
           Learn Anything, Anytime, Anywhere
         </Text>
         <Text style={tw`text-white text-xs mt-2 text-center`}>
+
           Learning just a click away, Online learning is education that takes place over the internet.
         </Text>
       </View>

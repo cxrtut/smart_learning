@@ -1,39 +1,54 @@
-import { View, Text, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
+import React, { ReactNode, useState } from 'react'
 import colors from '@/constants/colors'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import Checkbox from 'expo-checkbox';
 import BouncyCheckbox from "react-native-bouncy-checkbox";
+import CustomCheckboxLabel from '@/components/CustomCheckboxLabel';
+import { useOnboarding } from '@/context/onboardingContext';
+import { getSubjectsByGradeAndSchool } from '@/utils';
+
 
 const Subjects = () => {
-  const [isChecked, setChecked] = useState(false);
+    const {gradeRange, schoolLevel} = useOnboarding();
+    const [isChecked, setChecked] = useState(false);
+
+    const resultSubjects = getSubjectsByGradeAndSchool(gradeRange, schoolLevel);
+
   return (
     <SafeAreaView 
                 style={{backgroundColor: colors.PRIMARY}}
                 className='flex h-full items-center justify-between py-3 pb-10'
             >
-            <View className='flex pl-3 items-start gap-y-14 w-full'>
+            <View className='flex pl-3 items-start gap-y-3 w-full'>
                 <Text 
                 className='text-start p-3 pl-5 font-bold text-white text-3xl'
                 >
                 Smart Learning
                 </Text>
 
-                <View className='w-full pl-3 flex gap-3'>
-                    <Text className='pl-1 text-white font-semibold text-lg'>
+                <View className='w-full pl-3 flex flex-col'>
+                    <Text className='pl-1 text-white font-semibold text-sm mb-5'>
                         What is your Grade range?
                     </Text>
-                    <View className='flex w-full flex-row gap-x-10'>
-                    <BouncyCheckbox
-                        size={25}
-                        fillColor="black"
-                        unFillColor="#FFFFFF"
-                        text="Custom Checkbox"
-                        iconStyle={{ borderColor: "grey" }}
-                        innerIconStyle={{ borderWidth: 2 }}
-                        onPress={(isChecked: boolean) => {console.log(isChecked)}}
-                    />
-                    </View>
+                    
+                    <ScrollView className='flex w-full flex-col'>
+                        {resultSubjects!.map((subject) => (
+                            <BouncyCheckbox
+                                id={subject.id}
+                                key={subject.id}
+                                size={25}
+                                fillColor={'gray'}
+                                unFillColor="#FFFFFF"
+                                textComponent={<CustomCheckboxLabel label={subject.subject} />}
+                                textStyle={{color: 'white'}}
+                                className='mb-3'
+                                onPress={(check: boolean) => {
+                                    
+                                    
+                                }}
+                            />
+                        ))}
+                    </ScrollView>
                 </View>
             </View>
 
