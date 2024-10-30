@@ -19,7 +19,7 @@ const SplashScreen = () => {
           source={require('../assets/images/onboarding13.png')}
           style={{ width: 400, height: 650 }}
           resizeMode='contain'
-          className='ml-[-25]'
+          className='ml-[-30]'
         />
       </View>
 
