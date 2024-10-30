@@ -12,7 +12,10 @@ const Home = () => {
   const resultSubjects = getSubjectsByGradeAndSchool(gradeRange, schoolLevel);
   return (
     <SafeAreaView style={{backgroundColor: colors.PRIMARY}} className='flex h-full w-full'>
-      <CustomHeader />
+      <CustomHeader 
+        title='Hello Muzi'
+        showBackButton={false}
+      />
       <ScrollView className='h-full p-3'>
         <View className='flex items-center justify-center'>
           {resultSubjects!.map((subject) => (
