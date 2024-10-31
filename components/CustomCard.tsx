@@ -5,7 +5,7 @@ const CustomCard = ({label, onPressAction}: {label: string, onPressAction?: () =
   return (
     <TouchableOpacity 
         onPress={onPressAction}
-        className='w-full p-5 mb-2 bg-white shadow-lg border-[0.5px] mx-5 rounded-lg'
+        className='w-full p-5 mb-2 bg-white shadow-lg border-[0.5px] mx-5 rounded-xl'
     >
         <Text className='font-semibold text-md'>
             {label}
