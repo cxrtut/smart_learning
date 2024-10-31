@@ -1,102 +1,52 @@
-import { View, Text, TouchableOpacity } from 'react-native'
-import React from 'react'
-import { useRouter } from 'expo-router'
-import colors from '@/constants/colors'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { Image, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
+import React from 'react';
+import { router } from 'expo-router';
+import colors from '@/constants/colors';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const SplashScreen = () => {
-  const router = useRouter(); 
-  
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.PRIMARY }]}>
-      {/* Top Text Section */}
-      <View style={styles.topTextContainer}>
-        <Text style={styles.titleText}>Smart Learning</Text>
+    <SafeAreaView style={{ backgroundColor: colors.PRIMARY }} className='flex h-full items-center justify-between py-3 pb-10'>
+      
+      <View className='flex items-start w-full'>
+        <Text className='text-start p-3 pl-5 font-semibold text-white text-2xl'>
+          Smart Learning
+        </Text>
       </View>
 
-      {/* Image Section */}
-      <Image
-        source={require('../assets/images/onboarding13.png')}
-        style={styles.image}
-        resizeMode="cover"
-      />
+      <View className='flex items-center mt-[-110]'>
+        <Image
+          source={require('../assets/images/onboarding13.png')}
+          style={{ width: 400, height: 650 }}
+          resizeMode='contain'
+          className='ml-[-30]'
+        />
+      </View>
 
       
-      <View style={styles.bottomTextContainer}>
-        <Text style={styles.mainText}>
-          Learn Anything, Anytime, Anywhere
-        </Text>
-        <Text style={styles.subText}>
-          Learning just a click away, Online learning is education that takes place over the internet.
-        </Text>
-      </View>
+      <View className='flex items-center mt-[-70]'>
+     <Text className='text-center text-white text-4xl px-7 font-bold'>
+      Learn Anything Anytime Anywhere
+     </Text>
+  
+  <Text className='text-center text-white text-lg mt-2 px-7'>
+    Learning just a click away, Online learning is education that takes place over the internet.
+  </Text>
+  </View>
 
-    
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.push('/(auth)/SignIn')} 
+    <TouchableOpacity
+        className='flex items-center justify-center bg-white px-4 p-4 rounded-full mt-auto w-[70%]' 
+        onPress={() => {
+          router.push('/(auth)/SignIn');
+        }}
       >
-        <Text style={styles.buttonText}>Get Started</Text>
+        <Text style={{ color: colors.PRIMARY }} className='font-bold text-lg'>
+          Get Started
+        </Text>
       </TouchableOpacity>
+      
     </SafeAreaView>
   );
-}
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    justifyContent: 'space-between',
-    padding: 10,
-  },
-  topTextContainer: {
-    alignItems: 'flex-start',
-    width: '100%',
-    paddingHorizontal: 20,
-  },
-  titleText: {
-    color: 'white',
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  image: {
-    width: 400, 
-    height: 400, 
-    alignSelf: 'center', 
-    marginLeft: -30,
-  },
-  bottomTextContainer: {
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    marginBottom: 30,
-  },
-  mainText: {
-    color: 'white',
-    fontSize: 22,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  subText: {
-    color: 'white',
-    fontSize: 12,
-    marginTop: 10,
-    textAlign: 'center',
-  },
-  button: {
-    backgroundColor: 'white',
-    paddingVertical: 15,
-    paddingHorizontal: 50,
-    borderRadius: 25,
-    alignSelf: 'center',
-    marginBottom: 40,
-    width: '70%',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: colors.PRIMARY,
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-});
+};
 
 export default SplashScreen;

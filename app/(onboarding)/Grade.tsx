@@ -15,7 +15,6 @@ const primaryGradeLevels = [
 const secondaryGradeLevels = [
   {label: 'Grade 8 - 9', value: '1'},
   {label: 'Grade 10 - 12', value: '2'},
-  {label: 'Grade 12', value: '3'},
 ]
 
 const Grade = () => {
@@ -32,14 +31,14 @@ const Grade = () => {
         return
     }
     // TODO: Add school level to user profile
-    router.push('/(onboarding)/Subjects' as Href)
+    router.push('/(dashboard)/Home' as Href)
 }
   return (
       <SafeAreaView 
                 style={{backgroundColor: colors.PRIMARY}}
                 className='flex h-full items-center justify-between py-3 pb-10'
             >
-            <View className='flex pl-3 items-start gap-y-14 w-full'>
+            <View className='flex pl-3 items-start gap-y-3 w-full'>
                 <Text 
                 className='text-start p-3 pl-5 font-bold text-white text-3xl'
                 >
@@ -47,7 +46,7 @@ const Grade = () => {
                 </Text>
 
                 <View className='w-full pl-3 flex gap-3'>
-                    <Text className='pl-1 text-white font-semibold text-lg'>
+                    <Text className='pl-1 text-white font-semibold text-sm'>
                         What is your Grade range?
                     </Text>
                     <Dropdown
