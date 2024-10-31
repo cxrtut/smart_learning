@@ -1,34 +1,83 @@
-import { View, Text, TouchableOpacity, TextInput } from 'react-native'
-import React from 'react'
+import { View, Text, TouchableOpacity, TextInput, ScrollView, Image } from 'react-native'
+import React, { useState } from 'react'
 import { Href, router } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import colors from '@/constants/colors'
 import Toast from 'react-native-toast-message'
+import OAuth from '@/components/OAuth'
+import { useSignUp } from '@clerk/clerk-expo'
+import ReactNativeModal from 'react-native-modal'
+import { images } from '@/constants'
+import CustomButton from '@/components/CustomButton'
 
 const SignUp = () => {
-    const [name, setName] = React.useState('')
-    const [email, setEmail] = React.useState('')
-    const [phoneNumber, setPhoneNumber] = React.useState('')
-    const [password, setPassword] = React.useState('')
-    const [confirmPassword, setConfirmPassword] = React.useState('')
+    const { isLoaded, signUp, setActive } = useSignUp()
+    const [showSuccessModal, setShowSuccessModal] = useState(false)
+    const [form, setForm] = useState({
+        name: '',
+        email: '',
+        password: '',
+        confirmPassword: ''
+    })
 
-    const SignUp = () => {
-        console.log('Signing up')
+    const [verification, setVerification] = useState({
+        state: 'default',
+        error: '',
+        code: ''
+    })
 
-        //TODO: Implement sign up
-        if (password === confirmPassword) {
-            return
-        } else {
-            Toast.show({
-                type: 'error',
-                text1: 'Error',
-                text2: 'Passwords do not match'
-            })
+    const onSignUpPress = async () => {
+        if (!isLoaded) {
+          return
         }
-
-        // Redirect to Sign In page
-        // router.push('/(auth)/SignIn' as Href)
-    }
+    
+        try {
+          await signUp.create({
+            emailAddress: form.email,
+            password: form.password,
+          })
+    
+          await signUp.prepareEmailAddressVerification({ strategy: 'email_code' })
+    
+          setVerification({
+            ...verification,
+            state: 'pending',
+          })
+        } catch (err: any) {
+          console.error(JSON.stringify(err, null, 2))
+        }
+      }
+    
+      const onPressVerify = async () => {
+        if (!isLoaded) return
+    
+        try {
+          const completeSignUp = await signUp.attemptEmailAddressVerification({
+            code: verification.code,
+          })
+    
+          if (completeSignUp.status === 'complete') {
+            // TODO: Create database user
+            await setActive({ session: completeSignUp.createdSessionId })
+            setVerification({
+                ...verification, 
+                state: 'success' 
+            })
+          } else {
+            setVerification({
+                ...verification, 
+                state: 'failed', 
+                error: 'Varification failed' 
+            })
+          }
+        } catch (err: any) {
+          setVerification({
+            ...verification,
+            state: 'failed',
+            error: err.errors[0].longMessage,
+          })
+        }
+      }
 
     return (
         <SafeAreaView 
@@ -42,15 +91,15 @@ const SignUp = () => {
             Smart Learning
             </Text>
 
-            <View className='w-full pl-3 flex gap-2'>
+            <ScrollView className='w-full pl-3 flex gap-2'>
                 <Text className='pl-3 text-white font-semibold text-lg'>
                     Register
                 </Text>
                 <TextInput
                     className='pl-5 text-white border-b-[1px] rounded-xl border-white p-5 w-[90%]'
                     placeholder='Name'
-                    value={name}
-                    onChangeText={newName => setName(newName)}
+                    value={form.name}
+                    onChangeText={newName => setForm({...form, name: newName})}
                     textContentType='name'
                     placeholderTextColor={'white'}
                 />
@@ -58,36 +107,31 @@ const SignUp = () => {
                 <TextInput
                     className='pl-5 text-white border-b-[1px] rounded-lg border-white p-5 w-[90%]'
                     placeholder='Email'
-                    value={email}
-                    onChangeText={newEmail => setEmail(newEmail)}
+                    value={form.email}
+                    onChangeText={newEmail => setForm({...form, email: newEmail})}
                     textContentType='emailAddress'
                     placeholderTextColor={'white'}
                 />
                 <TextInput
                     className='pl-5 text-white border-b-[1px] rounded-lg border-white p-5 w-[90%]'
-                    placeholder='Phone number'
-                    value={phoneNumber}
-                    onChangeText={newPhoneNumber => setPhoneNumber(newPhoneNumber)}
-                    textContentType='telephoneNumber'
-                    placeholderTextColor={'white'}
-                />
-                <TextInput
-                    className='pl-5 text-white border-b-[1px] rounded-lg border-white p-5 w-[90%]'
                     placeholder='Password'
-                    value={password}
-                    onChangeText={newPassword => setPassword(newPassword)}
+                    value={form.password}
+                    onChangeText={newPassword => setForm({...form, password: newPassword})}
                     textContentType='password'
+                    secureTextEntry={true}
                     placeholderTextColor={'white'}
                 />
                 <TextInput
                     className='pl-5 text-white border-b-[1px] rounded-lg border-white p-5 w-[90%]'
                     placeholder='Confirm Password'
-                    value={confirmPassword}
-                    onChangeText={newConfirmPassword => setConfirmPassword(newConfirmPassword)}
+                    value={form.confirmPassword}
+                    onChangeText={newConfirmPassword => setForm({...form, confirmPassword : newConfirmPassword})}
                     textContentType='password'
+                    secureTextEntry={true}
                     placeholderTextColor={'white'}
                 />
-            </View>
+                <OAuth/>
+            </ScrollView>
         </View>
 
             <View className='w-full gap-y-5 flex flex-col items-center'>
@@ -112,6 +156,32 @@ const SignUp = () => {
                     </Text>
                 </TouchableOpacity>
             </View>
+
+            {/* Modal for OTP verification */}
+            <ReactNativeModal isVisible={verification.state === 'success'}>
+                <View className='bg-white px-7 py-9 rounded-2xl min-h-[300px]'>
+                    <Image
+                        source={images.check}
+                        className='w-[110px] h-[110px] mx-auto my-5'
+                    />
+                    <Text className="text-3xl text-black text-center">
+                        Verified
+                    </Text>
+                    <Text className="text-base text-gray-400 text-center">
+                        You have successfully verified account.
+                    </Text>
+
+                    <CustomButton
+                        title="Browse Home"
+                        onPress={() => {
+                        setShowSuccessModal(false)
+                        router.push('/(onboarding)/School')
+                        }}
+                        className="mt-5"
+                    />
+                </View>
+
+            </ReactNativeModal>
         </SafeAreaView>
     )
 }
