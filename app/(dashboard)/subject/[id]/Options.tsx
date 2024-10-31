@@ -11,14 +11,22 @@ const Options = () => {
     return (
         <SafeAreaView style={{backgroundColor: colors.PRIMARY}} className='flex h-full w-full'>
             <CustomHeader  
-                title='Your Options'
+                title='Select A Option'
                 showBackButton={true}
                 headerStyles='pr-3'
             />
-            <ScrollView className='h-full mt-5 p-3'>
+            <ScrollView className='h-full mt-10 p-3'>
                 <View className='flex items-center justify-center'>
                     <CustomCard 
-                        label='Quiz'
+                        label='COURSE'
+                        onPressAction={() => {router.push(`/(dashboard)/subject/${id}/Course`)}} 
+                    />
+                     <CustomCard 
+                        label='HOMEWORK'
+                        onPressAction={() => {router.push(`/(dashboard)/subject/${id}/Homework`)}} 
+                    />
+                     <CustomCard 
+                        label='QUIZ'
                         onPressAction={() => {router.push(`/(dashboard)/subject/${id}/Quiz`)}} 
                     />
                 </View>
