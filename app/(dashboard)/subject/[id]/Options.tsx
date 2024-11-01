@@ -18,15 +18,15 @@ const Options = () => {
             <ScrollView className='h-full mt-10 p-3'>
                 <View className='flex items-center justify-center'>
                     <CustomCard 
-                        label='COURSE'
+                        label='Course'
                         onPressAction={() => {router.push(`/(dashboard)/subject/${id}/Course`)}} 
                     />
                      <CustomCard 
-                        label='HOMEWORK'
+                        label='Homework'
                         onPressAction={() => {router.push(`/(dashboard)/subject/${id}/Homework`)}} 
                     />
                      <CustomCard 
-                        label='QUIZ'
+                        label='Quiz'
                         onPressAction={() => {router.push(`/(dashboard)/subject/${id}/Quiz`)}} 
                     />
                 </View>
