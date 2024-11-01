@@ -7,8 +7,10 @@ import CustomCard from '@/components/CustomCard'
 import { ActiveSubject, useOnboarding } from '@/context/onboardingContext'
 import { getSubjectsByGradeAndSchool } from '@/utils'
 import { Href, router } from 'expo-router'
+import { useUser } from '@clerk/clerk-expo'
 
 const Home = () => {
+  const {user} = useUser();
   const {gradeRange, schoolLevel, setActiveSubject} = useOnboarding();
   const resultSubjects = getSubjectsByGradeAndSchool(gradeRange, schoolLevel);
 
@@ -20,7 +22,7 @@ const Home = () => {
   return (
     <SafeAreaView style={{backgroundColor: colors.PRIMARY}} className='flex h-full w-full'>
       <CustomHeader 
-        title='Hello Muzi'
+        title={`Hello ${user?.fullName!}`}
         showBackButton={false}
       />
       <ScrollView className='h-full p-3'>

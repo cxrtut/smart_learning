@@ -1,25 +1,46 @@
 import { View, Text, TouchableOpacity, TextInput } from 'react-native'
-import React from 'react'
-import { Href, router } from 'expo-router'
+import React, { useCallback, useState } from 'react'
+import { Href, router, useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import colors from '@/constants/colors'
+import { useSignIn } from '@clerk/clerk-expo'
+import Toast from 'react-native-toast-message'
 
 const SignIn = () => {
-    const [email, setEmail] = React.useState('')
-    const [password, setPassword] = React.useState('')
+    const { signIn, setActive, isLoaded } = useSignIn()
+    const router = useRouter()
+    const [form, setForm] = useState({
+        email: '',
+        password: ''
+    })
 
-    const SignIn = () => {
-        console.log('Signing in')
-
-        const data = {
-            email,
-            password
+    const onSignInPress = useCallback(async () => {
+        if (!isLoaded) return
+    
+        try {
+          const signInAttempt = await signIn.create({
+            identifier: form.email,
+            password: form.password,
+          })
+    
+          if (signInAttempt.status === 'complete') {
+            await setActive({ session: signInAttempt.createdSessionId })
+            router.replace('/(dashboard)/(home)/Home' as Href)
+          } else {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Invalid email or password'
+            })
+          }
+        } catch (err: any) {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: err.errors[0].longMessage
+            })
         }
-        
-        //TODO: Implement sign in
-
-        router.replace('/(onboarding)/School' as Href)
-    }
+      }, [isLoaded, form.email, form.password])
 
     return (
         <SafeAreaView 
@@ -39,8 +60,8 @@ const SignIn = () => {
                 </Text>
                 <TextInput
                     className='pl-5 text-white border-b-[1px] rounded-xl border-white p-5 w-[90%]'
-                    value={email}
-                    onChangeText={newEmail => setEmail(newEmail)}
+                    value={form.email}
+                    onChangeText={newEmail => setForm({...form, email: newEmail})}
                     placeholder='Email'
                     textContentType='emailAddress'
                     placeholderTextColor={'white'}
@@ -48,8 +69,8 @@ const SignIn = () => {
 
                 <TextInput
                     className='pl-5 text-white border-b-[1px] rounded-lg border-white p-5 w-[90%]'
-                    onChangeText={newPassword => setPassword(newPassword)}
-                    value={password}
+                    onChangeText={newPassword => setForm({...form, password: newPassword})}
+                    value={form.password}
                     placeholder='Password'
                     textContentType='password'
                     placeholderTextColor={'white'}
@@ -78,7 +99,7 @@ const SignIn = () => {
                 </TouchableOpacity>
                 <TouchableOpacity
                     className='flex items-center justify-center bg-white px-4 p-4 rounded-full mt-[-25%] w-[70%]' 
-                    onPress={() => SignIn()}
+                    onPress={onSignInPress}
                 >
                     <Text
                         style={{color: colors.PRIMARY}}
