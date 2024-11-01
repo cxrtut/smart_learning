@@ -9,6 +9,7 @@ import { useSignUp } from '@clerk/clerk-expo'
 import ReactNativeModal from 'react-native-modal'
 import { images } from '@/constants'
 import CustomButton from '@/components/CustomButton'
+import { fetchAPI } from '@/lib/fetch'
 
 const SignUp = () => {
     const { isLoaded, signUp, setActive } = useSignUp()
@@ -30,6 +31,15 @@ const SignUp = () => {
         if (!isLoaded) {
           return
         }
+
+        if (form.password !== form.confirmPassword) {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Passwords do not match'
+            })
+            return
+        }
     
         try {
           await signUp.create({
@@ -44,7 +54,11 @@ const SignUp = () => {
             state: 'pending',
           })
         } catch (err: any) {
-          console.error(JSON.stringify(err, null, 2))
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: err.errors[0].longMessage
+            })
         }
       }
     
@@ -58,6 +72,14 @@ const SignUp = () => {
     
           if (completeSignUp.status === 'complete') {
             // TODO: Create database user
+            await fetchAPI('/(api)/user', {
+                method: 'POST',
+                body: JSON.stringify({
+                  name: form.name,
+                  email: form.email,
+                  clerkId: completeSignUp.createdUserId,
+                })
+              });
             await setActive({ session: completeSignUp.createdSessionId })
             setVerification({
                 ...verification, 
@@ -146,7 +168,7 @@ const SignUp = () => {
                 </TouchableOpacity>
                 <TouchableOpacity
                     className='flex items-center justify-center bg-white px-4 p-4 rounded-full mt-[-25%] w-[70%]' 
-                    onPress={() => SignUp()}
+                    onPress={onSignUpPress}
                 >
                     <Text
                         style={{color: colors.PRIMARY}}
@@ -156,6 +178,41 @@ const SignUp = () => {
                     </Text>
                 </TouchableOpacity>
             </View>
+
+            <ReactNativeModal
+                isVisible={verification.state === 'pending'}
+                onModalHide={() => { 
+                    if(verification.state === 'success')  setShowSuccessModal(true)
+                }}
+            >
+                <View className="bg-white px-7 py-9 rounded-2xl min-h-[300px]">
+                <Text className="text-2xl font-JakartaSemiBold mb-2 ">
+                    Verfication
+                </Text>
+                <Text className="font-Jakarta mb-5">
+                    We've sent a verification code to {form.email}. Please enter the code below.
+                </Text>
+
+                <TextInput
+                    placeholder="12345"
+                    value={verification.code}
+                    keyboardType="numeric"
+                    onChangeText={(code) => setVerification({ ...verification, code })}
+                />
+
+                {verification.error && (
+                    <Text className="text-red-500 text-sm mt-1 font-Jakarta">
+                    {verification.error}
+                    </Text>
+                )}
+
+                <CustomButton
+                    title="Verify Email"
+                    onPress={onPressVerify}
+                    className="mt-5 bg-success-500"
+                />
+                </View>
+            </ReactNativeModal>
 
             {/* Modal for OTP verification */}
             <ReactNativeModal isVisible={verification.state === 'success'}>

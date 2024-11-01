@@ -1,9 +1,10 @@
 import { neon } from '@neondatabase/serverless';
+import {v4 as uuidv4} from 'uuid';
 
 
 export async function POST(request: Request) {
     try {
-        console.log("Running POST request to inject user data");
+        let user_id = uuidv4();
         const sql = neon(`${process.env.DATABASE_URL}`);
         const { name, email, clerkId } = await request.json();
 
@@ -15,14 +16,14 @@ export async function POST(request: Request) {
         }
 
         const response = await sql`
-            INSERT INTO User (clerk_id, email, username)
-            VALUES (${clerkId}, ${email}, ${name}, )
+            INSERT INTO "User"(user_id, clerk_id, email, username)
+            VALUES(${user_id}, ${clerkId}, ${email}, ${name});
         `;
 
         return new Response(JSON.stringify({data: response}), { status: 200 });
         
     } catch (error) {
-        console.log(error);
+        console.log("Error from fetch: ", error);
         return Response.json({error: error}, { status: 500 });
     }
 }
