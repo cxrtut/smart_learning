@@ -9,6 +9,8 @@ import folder from '@/assets/icons/folder.png'
 import lockClosed from '@/assets/icons/lock-closed.png'
 import search from '@/assets/icons/search.png'
 import settingsIcon from '@/assets/icons/settings.png'
+import google from '@/assets/icons/google.png'
+import check from '@/assets/images/check.png'
 
 export const icons = {
     home,
@@ -21,7 +23,12 @@ export const icons = {
     folder,
     lockClosed,
     search,
-    settingsIcon
+    settingsIcon,
+    google
+}
+
+export const images = {
+    check
 }
 
 export interface OnboardingState {

@@ -1,10 +1,18 @@
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 import React from 'react';
-import { router } from 'expo-router';
+import { Href, Redirect, router } from 'expo-router';
 import colors from '@/constants/colors';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAuth } from '@clerk/clerk-expo';
 
 const SplashScreen = () => {
+  const { isSignedIn } = useAuth()
+
+  if (isSignedIn) {
+    return <Redirect 
+        href={'/(dashboard)/(home)/Home' as Href} 
+    />
+  }
   return (
     <SafeAreaView style={{ backgroundColor: colors.PRIMARY }} className='flex h-full items-center justify-between py-3 pb-10'>
       
