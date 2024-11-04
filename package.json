@@ -25,6 +25,7 @@
     "expo": "~51.0.28",
     "expo-checkbox": "~3.0.0",
     "expo-constants": "~16.0.2",
+    "expo-dev-client": "~4.0.28",
     "expo-font": "~12.0.9",
     "expo-linking": "~6.3.1",
     "expo-local-authentication": "^14.0.1",
@@ -50,6 +51,7 @@
     "react-native-toast-message": "^2.2.1",
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "~0.19.10",
+    "smartlearning": "file:",
     "uuid": "^11.0.2"
   },
   "devDependencies": {
