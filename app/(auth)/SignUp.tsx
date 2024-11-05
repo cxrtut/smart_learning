@@ -71,7 +71,6 @@ const SignUp = () => {
           })
     
           if (completeSignUp.status === 'complete') {
-            // TODO: Create database user
             await fetchAPI('/(api)/user', {
                 method: 'POST',
                 body: JSON.stringify({

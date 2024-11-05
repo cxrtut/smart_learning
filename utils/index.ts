@@ -1,4 +1,11 @@
-import { grade10_12Subjects, grade1_3Subjects, grade4_6Subjects, grade7Subjects, grade8_9Subjects } from "@/constants";
+import { 
+    grade10_12Subjects, 
+    grade1_3Subjects, 
+    grade4_6Subjects, 
+    grade7Subjects, 
+    grade8_9Subjects 
+} from "@/constants";
+import { fetchAPI } from "@/lib/fetch";
 
 export const getSubjectsByGradeAndSchool = (grade: string, school: string) => {
     if(school === '1') {
@@ -31,4 +38,17 @@ export const addSubject = (subjects: string[], subject: string) => {
         return subjects.filter((sub) => sub !== subject);
     }
     return [...subjects, subject];
+}
+
+export const getSchoolLevelandGradeRange = async () => {
+    try{
+        const result = await fetchAPI('/(api)/onboarding', {
+            method: 'GET',
+          });
+        
+        return result; 
+    } catch(error) {
+        console.log("Error from fetch: ", error);
+        return Response.json({error: error}, { status: 500 });
+    }
 }

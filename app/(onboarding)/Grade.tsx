@@ -6,6 +6,8 @@ import { Dropdown } from 'react-native-element-dropdown';
 import { Href, router } from 'expo-router';
 import { useOnboarding } from '@/context/onboardingContext';
 import Toast from 'react-native-toast-message';
+import { fetchAPI } from '@/lib/fetch';
+import { useUser } from '@clerk/clerk-expo';
 
 const primaryGradeLevels = [
   {label: 'Grade 1 - 3', value: '1'},
@@ -18,10 +20,11 @@ const secondaryGradeLevels = [
 ]
 
 const Grade = () => {
-  const {schoolLevel, setGradeRange} = useOnboarding()
+  const {user} = useUser();
+  const {schoolLevel, setGradeRange, gradeRange} = useOnboarding()
   const [value, setValue] = useState('');
 
-  const MoveToNextSection = () => {
+  const MoveToNextSection = async () => {
     if (!value) {
         Toast.show({
             type: 'error',
@@ -30,9 +33,18 @@ const Grade = () => {
         })
         return
     }
-    // TODO: Add school level to user profile
+
+    await fetchAPI('/(api)/(onboarding)/create', {
+      method: 'POST',
+      body: JSON.stringify({
+        userId: user!.id,
+        schoolLevel,
+        gradeRange: gradeRange
+      })
+    });
+
     router.push('/(dashboard)/Home' as Href)
-}
+  }
   return (
       <SafeAreaView 
                 style={{backgroundColor: colors.PRIMARY}}
