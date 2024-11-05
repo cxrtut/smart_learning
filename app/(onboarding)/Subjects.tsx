@@ -10,7 +10,6 @@ import { getSubjectsByGradeAndSchool } from '@/utils';
 
 const Subjects = () => {
     const {gradeRange, schoolLevel} = useOnboarding();
-    const [isChecked, setChecked] = useState(false);
 
     const resultSubjects = getSubjectsByGradeAndSchool(gradeRange, schoolLevel);
 
