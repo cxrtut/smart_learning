@@ -1,11 +1,25 @@
-import { View, Text } from 'react-native'
+import { View, Text, TextInput, TextInputProps } from 'react-native'
 import React from 'react'
 
-const CustomInput = () => {
+const CustomInput = ({
+  value, 
+  className, 
+  placeholder, 
+  setValue
+}: {
+  value: string, 
+  className: string, 
+  placeholder: string, 
+  setValue: () => void
+}) => {
   return (
-    <View>
-      <Text>CustomInput</Text>
-    </View>
+    <TextInput
+        className={`pl-5 text-white border-b-[1px] rounded-lg border-white p-5 w-[90%] ${className}`}
+        onChangeText={setValue}
+        value={value}
+        placeholder={placeholder}
+        placeholderTextColor={'white'}
+    />
   )
 }
 
