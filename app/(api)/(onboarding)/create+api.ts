@@ -4,7 +4,6 @@ import { neon } from '@neondatabase/serverless';
 export async function POST(request: Request) {
     try {
         const sql = neon(`${process.env.DATABASE_URL}`);
-        console.log("Running onboarding POST");
 
         const { userId, schoolLevel, gradeRange } = await request.json();
 
