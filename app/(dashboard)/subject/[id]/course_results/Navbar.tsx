@@ -1,20 +1,12 @@
 import React from 'react';
+import { View, Text } from 'react-native';
 
-const Navbar: React.FC = () => {
+const NavBar = () => {
     return (
-        <nav style={styles.navbar}>
-            <h1>Video Page</h1>
-        </nav>
+        <View className="h-16 justify-center items-center bg-purple-700">
+            <Text className="text-xl text-white">My App</Text>
+        </View>
     );
 };
 
-const styles = {
-    navbar: {
-        backgroundColor: '#282c34',
-        padding: '1rem',
-        color: 'white',
-        textAlign: 'center',
-    } as React.CSSProperties,
-};
-
-export default Navbar
+export default NavBar;

@@ -1,54 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React from 'react';
+import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 
-interface Video {
-    id: string;
-    url: string;
-    title: string;
+interface VideoListProps {
+    videos: Array<{ id: string; url: string; title: string }>;
+    onSelect?: (video: { id: string; url: string; title: string }) => void;
 }
 
-const VideoList: React.FC<{ onSelect: (video: Video) => void }> = ({ onSelect }) => {
-    const [videos, setVideos] = useState<Video[]>([]);
-
-    useEffect(() => {
-        // Replace with your API to fetch videos
-        axios.get('/api/videos')
-            .then(response => setVideos(response.data))
-            .catch(error => console.error('Error fetching videos:', error));
-    }, []);
-
+const VideoList: React.FC<VideoListProps> = ({ videos, onSelect }) => {
     return (
-        <div style={styles.videoList}>
-            {videos.map(video => (
-                <div key={video.id} style={styles.videoItem} onClick={() => onSelect(video)}>
-                    <video
-                        src={video.url}
-                        controls
-                        style={styles.video}
-                        title={video.title}
-                    />
-                    <p>{video.title}</p>
-                </div>
-            ))}
-        </div>
+        <FlatList
+            data={videos}
+            renderItem={({ item }) => (
+                <TouchableOpacity onPress={() => onSelect && onSelect(item)} className="p-2 my-2 bg-gray-100 rounded-lg">
+                    <Text className="text-base text-gray-800">{item.title}</Text>
+                </TouchableOpacity>
+            )}
+            keyExtractor={(item) => item.id}
+        />
     );
 };
 
-const styles = {
-    videoList: {
-        display: 'flex',
-        overflowX: 'auto',
-        padding: '1rem',
-        gap: '1rem',
-    } as React.CSSProperties,
-    videoItem: {
-        flex: '0 0 auto',
-        textAlign: 'center',
-    } as React.CSSProperties,
-    video: {
-        width: '300px',
-        height: 'auto',
-    } as React.CSSProperties,
-};
-
-export default VideoList
+export default VideoList;
