@@ -11,6 +11,7 @@ import search from '@/assets/icons/search.png'
 import settingsIcon from '@/assets/icons/settings.png'
 import google from '@/assets/icons/google.png'
 import check from '@/assets/images/check.png'
+import onboarding13 from '@/assets/images/onboarding13.png'
 
 export const icons = {
     home,
@@ -24,11 +25,13 @@ export const icons = {
     lockClosed,
     search,
     settingsIcon,
-    google
+    google,
+    
 }
 
 export const images = {
-    check
+    check,
+    onboarding13
 }
 
 export interface OnboardingState {

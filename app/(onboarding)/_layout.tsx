@@ -7,7 +7,6 @@ const OnboardingLayout = () => {
     <Stack initialRouteName="School" screenOptions={{headerShown: false}}>
         <Stack.Screen name='School'/>
         <Stack.Screen name='Grade'/>
-        <Stack.Screen name='Subjects'/>
     </Stack>
   )
 }
