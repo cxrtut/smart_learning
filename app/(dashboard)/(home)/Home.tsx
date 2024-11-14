@@ -14,6 +14,9 @@ import { fetchAPI, useFetch } from '@/lib/fetch'
 
 const Home = () => {
   const {user} = useUser();
+  console.log(user?.firstName)
+  const name = "John Doe"
+
   const {
     gradeRange, 
     schoolLevel, 
@@ -50,7 +53,7 @@ const Home = () => {
     return (
       <SafeAreaView style={{backgroundColor: colors.PRIMARY}} className='flex h-full w-full'>
         <CustomHeader 
-          title={`Hello ${user?.firstName!}`}
+          title={`Hello ${name}`}
           showBackButton={false}
         />
         <View className='flex-1 items-center justify-center'>
@@ -68,7 +71,7 @@ const Home = () => {
   return (
     <SafeAreaView style={{backgroundColor: colors.PRIMARY}} className='flex h-full w-full'>
       <CustomHeader 
-        title={`Hello ${user?.firstName!}`}
+        title={`Hello ${user?.firstName}`}
         showBackButton={false}
       />
       <ScrollView className='h-full p-3'>
