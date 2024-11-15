@@ -29,7 +29,7 @@ const Quiz = () => {
     {
       question: 'What is the capital city of South Africa?',
       options: ['Durban', 'Cape Town', 'Pretoria', 'Johannesburg'],
-      correctAnswer: 'Pretoria',
+      correctAnswer: 'Pretoria',  
     },
   ];
 
