@@ -54,6 +54,7 @@
     "react-native-toast-message": "^2.2.1",
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "~0.19.10",
+    "smartlearning": "file:",
     "tailwind-rn": "^4.2.0",
     "uuid": "^11.0.2"
   },
