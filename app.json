@@ -12,6 +12,8 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    
+  
     "ios": {
       "supportsTablet": true
     },
@@ -29,7 +31,8 @@
     },
     "plugins": [
       [
-        "expo-router",
+        "expo-router"
+        ,
         {
           "origin": "https://uber.com/"
         }
@@ -43,5 +46,6 @@
         "projectId": "9620ad21-2a21-42d3-b6f3-6da05844f724"
       }
     }
+  
   }
 }

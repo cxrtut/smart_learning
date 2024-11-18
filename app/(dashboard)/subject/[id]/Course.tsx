@@ -18,16 +18,15 @@ const Course = () => {
 
     const handleSearch = () => {
         if (searchQuery.trim()) {
-            // @ts-ignore
-            router.push(`/(dashboard)/subject/[id]/course_results/course_result`);
+            router.push(`/(dashboard)/subject/${id}/course_results/Course_result`);
         }
     };
 
     const handleOptionSelect = (itemValue: string) => {
         setSelectedOption(itemValue);
         if (itemValue) {
-            // @ts-ignore
-            router.push(`/(dashboard)/subject/[id]/course_results/course_result`);
+
+            router.push(`/(dashboard)/subject/${id}/course_results/Course_result`);
         }
     };
 
