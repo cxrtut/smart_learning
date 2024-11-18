@@ -31,7 +31,7 @@ const Course_result = () => {
 
             <TouchableOpacity
                 style={{ marginBottom: 16, padding: 8, backgroundColor: 'white', borderRadius: 999, shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 5 }}
-                onPress={() => navigation.navigate('ResultPage')}
+               // onPress={() => navigation.navigate('ResultPage')}
             >
                 <Text style={{ color: '#3b82f6', fontWeight: 'bold' }}>Go to Result Page</Text>
             </TouchableOpacity>

@@ -23,7 +23,7 @@ const Home = () => {
   } = useOnboarding();
 
   const [loading, setLoading] = useState(true)
-  let resultSubjects = getSubjectsByGradeAndSchool(gradeRange, schoolLevel)
+  let resultSubjects = getSubjectsByGradeAndSchool("1", "1")
 
 
   useEffect(()  => {
