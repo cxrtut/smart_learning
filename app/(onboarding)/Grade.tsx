@@ -15,8 +15,8 @@ const primaryGradeLevels = [
   {label: 'Grade 7', value: '3'},
 ]
 const secondaryGradeLevels = [
-  {label: 'Grade 8 - 9', value: '1'},
-  {label: 'Grade 10 - 12', value: '2'},
+  {label: 'Grade 8 - 9', value: '4'},
+  {label: 'Grade 10 - 12', value: '5'},
 ]
 
 const Grade = () => {
@@ -33,6 +33,7 @@ const Grade = () => {
         })
         return
     }
+    // console.log(user?.id)
 
     await fetchAPI('/(api)/(onboarding)/create', {
       method: 'POST',

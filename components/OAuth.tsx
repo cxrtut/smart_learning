@@ -14,10 +14,11 @@ const OAuth = () => {
             const result = await googleOAuth(startOAuthFlow)
 
             if(result.code === 'success') {
-                // TODO: Only route to onboarding if its initial signup
                 router.push('/(onboarding)/School' as Href)
             } else if (result.code === 'session_exists') {
                 router.push('/(dashboard)/(home)/Home' as Href)
+            } else if (result.code === 'cancelled') {
+                router.push('/(auth)/SignIn' as Href)
             }
         } catch (err) {
         console.error('OAuth error', err)
@@ -26,15 +27,15 @@ const OAuth = () => {
 
     return (
         <View>
-            <View className="flex flex-row justify-center items-center mt-4 gap-x-3">
-                <View className="flex-1 h-[1px] bg-general-100"/>
-                <Text className="text-lg text-white">Or</Text>
+            <View className="flex flex-row justify-center items-center mr-5 mt-4 gap-x-3">
+                <View className="flex-1 items-center justify-center h-[1px] bg-general-100"/>
+                    <Text className="text-lg text-white">Or</Text>
                 <View className="flex-1 h-[1px] bg-general-100"/>
             </View>
 
             <CustomButton
-                title="Sign Up with Google"
-                className="mt-5 w-full shadow-none bg-white"
+                title={"Sign Up with Google"}
+                className="mt-5 w-[90%] shadow-none bg-white"
                 IconLeft={() => (
                     <Image
                         source={icons.google}
