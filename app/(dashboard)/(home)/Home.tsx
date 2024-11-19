@@ -14,6 +14,7 @@ import { fetchAPI, useFetch } from '@/lib/fetch'
 
 const Home = () => {
   const {user} = useUser();
+  
   const {
     gradeRange, 
     schoolLevel, 

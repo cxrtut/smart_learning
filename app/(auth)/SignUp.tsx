@@ -1,45 +1,50 @@
-import { View, Text, TouchableOpacity, TextInput, ScrollView, Image } from 'react-native'
-import React, { useState } from 'react'
-import { Href, router } from 'expo-router'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { useSignUp } from "@clerk/clerk-expo";
+import { Href, Link, router } from "expo-router";
+import React, { useState } from "react";
+import { Alert, Image, ScrollView, Text, View } from "react-native";
+import { ReactNativeModal } from "react-native-modal";
+
+import CustomButton from "@/components/CustomButton";
+import InputField from "@/components/InputField";
+import OAuth from "@/components/OAuth";
+import { icons, images } from "@/constants";
+import { fetchAPI } from "@/lib/fetch";
+
 import colors from '@/constants/colors'
 import Toast from 'react-native-toast-message'
-import OAuth from '@/components/OAuth'
-import { useSignUp } from '@clerk/clerk-expo'
-import ReactNativeModal from 'react-native-modal'
-import { images } from '@/constants'
-import CustomButton from '@/components/CustomButton'
-import { fetchAPI } from '@/lib/fetch'
+
+
 
 const SignUp = () => {
-    const { isLoaded, signUp, setActive } = useSignUp()
-    const [showSuccessModal, setShowSuccessModal] = useState(false)
+    const { isLoaded, signUp, setActive } = useSignUp();
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+
     const [form, setForm] = useState({
-        name: '',
-        email: '',
-        password: '',
-        confirmPassword: ''
-    })
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: ""
+    });
 
     const [verification, setVerification] = useState({
         state: 'default',
         error: '',
         code: ''
-    })
+    });
 
     const onSignUpPress = async () => {
         if (!isLoaded) {
           return
         }
-
-        if (form.password !== form.confirmPassword) {
-            Toast.show({
-                type: 'error',
-                text1: 'Error',
-                text2: 'Passwords do not match'
-            })
-            return
-        }
+        // // compare password
+        // if (form.password !== form.confirmPassword) {
+        //     Toast.show({
+        //         type: 'error',
+        //         text1: 'Error',
+        //         text2: 'Passwords do not match'
+        //     })
+        //     return
+        // }
     
         try {
           await signUp.create({
@@ -100,145 +105,136 @@ const SignUp = () => {
         }
       }
 
-    return (
-        <SafeAreaView 
-            style={{backgroundColor: colors.PRIMARY}}
-            className='flex h-full items-center justify-between py-3 pb-10'
-        >
-        <View className='flex pl-3 items-start gap-y-14 w-full'>
-            <Text 
-            className='text-start p-3 pl-5 font-bold text-white text-3xl'
-            >
-            Smart Learning
-            </Text>
-
-            <ScrollView className='w-full pl-3 flex gap-2'>
-                <Text className='pl-3 text-white font-semibold text-lg'>
-                    Register
-                </Text>
-                <TextInput
-                    className='pl-5 text-white border-b-[1px] rounded-xl border-white p-5 w-[90%]'
-                    placeholder='Name'
-                    value={form.name}
-                    onChangeText={newName => setForm({...form, name: newName})}
-                    textContentType='name'
-                    placeholderTextColor={'white'}
-                />
-
-                <TextInput
-                    className='pl-5 text-white border-b-[1px] rounded-lg border-white p-5 w-[90%]'
-                    placeholder='Email'
-                    value={form.email}
-                    onChangeText={newEmail => setForm({...form, email: newEmail})}
-                    textContentType='emailAddress'
-                    placeholderTextColor={'white'}
-                />
-                <TextInput
-                    className='pl-5 text-white border-b-[1px] rounded-lg border-white p-5 w-[90%]'
-                    placeholder='Password'
-                    value={form.password}
-                    onChangeText={newPassword => setForm({...form, password: newPassword})}
-                    textContentType='password'
-                    secureTextEntry={true}
-                    placeholderTextColor={'white'}
-                />
-                <TextInput
-                    className='pl-5 text-white border-b-[1px] rounded-lg border-white p-5 w-[90%]'
-                    placeholder='Confirm Password'
-                    value={form.confirmPassword}
-                    onChangeText={newConfirmPassword => setForm({...form, confirmPassword : newConfirmPassword})}
-                    textContentType='password'
-                    secureTextEntry={true}
-                    placeholderTextColor={'white'}
-                />
-                <OAuth/>
-            </ScrollView>
-        </View>
-
-            <View className='w-full gap-y-5 flex flex-col items-center'>
-                <TouchableOpacity
-                    onPress={() => {
-                    router.push('/(auth)/SignIn' as Href)
-                    }}
-                >
-                    <Text className='text-white'>
-                        Already have an account? Sign in 
-                    </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    className='flex items-center justify-center bg-white px-4 p-4 rounded-full mt-[-25%] w-[70%]' 
-                    onPress={onSignUpPress}
-                >
-                    <Text
-                        style={{color: colors.PRIMARY}}
-                        className='font-bold text-lg'
-                    >
-                        Sign Up
-                    </Text>
-                </TouchableOpacity>
+      return (
+        <ScrollView style={{ backgroundColor: colors.PRIMARY }} className="flex-1">
+        <View className="flex-1">
+            {/* Header view */}
+            <View className="relative w-full h-[250px]">
+                <Image source={images.teach} className="z-0 w-full h-[250px]" />
+                {/* <Text className="text-2xl text-white font-JakartaSemiBold absolute bottom-5 left-11 transform -translate-x-1/2">
+                    Smart Learning
+                </Text> */}
             </View>
 
-            <ReactNativeModal
-                isVisible={verification.state === 'pending'}
-                onModalHide={() => { 
-                    if(verification.state === 'success')  setShowSuccessModal(true)
-                }}
-            >
-                <View className="bg-white px-7 py-9 rounded-2xl min-h-[300px]">
-                <Text className="text-2xl font-JakartaSemiBold mb-2 ">
-                    Verfication
-                </Text>
-                <Text className="font-Jakarta mb-5">
-                    We've sent a verification code to {form.email}. Please enter the code below.
-                </Text>
-
-                <TextInput
-                    placeholder="12345"
-                    value={verification.code}
-                    keyboardType="numeric"
-                    onChangeText={(code) => setVerification({ ...verification, code })}
+            {/* Sign-up Form view */}
+            <View className="p-5">
+                <InputField
+                    label="Name"
+                    placeholder="Enter name"
+                    icon={icons.person}
+                    value={form.name}
+                    onChangeText={(newName: string) => setForm({ ...form, name: newName })}
                 />
-
-                {verification.error && (
-                    <Text className="text-red-500 text-sm mt-1 font-Jakarta">
-                    {verification.error}
-                    </Text>
-                )}
+                <InputField
+                    label="Email"
+                    placeholder="Enter email"
+                    icon={icons.email}
+                    textContentType="emailAddress"
+                    value={form.email}
+                    onChangeText={(newEmail: string) => setForm({ ...form, email: newEmail })}
+                />
+                <InputField
+                    label="Password"
+                    placeholder="Enter password"
+                    icon={icons.lock}
+                    secureTextEntry={true}
+                    textContentType="password"
+                    value={form.password}
+                    onChangeText={(newPassword: string) => setForm({ ...form, password: newPassword })}
+                />
+                {/* <InputField
+                label="Password"
+                placeholder="Confirm Password"
+                icon={icons.lock}
+                secureTextEntry={true}
+                textContentType="password"
+                value={form.password}
+                onChangeText={(newConfirmPassword: string) => setForm({ ...form, confirmPassword: newConfirmPassword })}
+                /> */}
 
                 <CustomButton
-                    title="Verify Email"
-                    onPress={onPressVerify}
-                    className="mt-5 bg-success-500"
+                    title="Sign Up"
+                    onPress={onSignUpPress}
+                    className="mt-6"
                 />
-                </View>
-            </ReactNativeModal>
+                <OAuth />
+                
+                {/* Sign-in botton */}
+                <Link 
+                    href="/(auth)/SignIn" 
+                    className="text-lg text-center text-general-200 mt-10"
+                >
+                        Already have an account?{" "}
+                    <Text className="text-primary-500">Sign In</Text>
+                </Link>    
+            </View>
+            {/* End of Create Account View */}
 
-            {/* Modal for OTP verification */}
-            <ReactNativeModal isVisible={verification.state === 'success'}>
-                <View className='bg-white px-7 py-9 rounded-2xl min-h-[300px]'>
-                    <Image
-                        source={images.check}
-                        className='w-[110px] h-[110px] mx-auto my-5'
-                    />
-                    <Text className="text-3xl text-black text-center">
-                        Verified
-                    </Text>
-                    <Text className="text-base text-gray-400 text-center">
-                        You have successfully verified account.
-                    </Text>
+            <ReactNativeModal
+          isVisible={verification.state === "pending"}
+          // onBackdropPress={() =>
+          //   setVerification({ ...verification, state: "default" })
+          // }
+          onModalHide={() => {
+            if (verification.state === "success") {
+              setShowSuccessModal(true);
+            }
+          }}
+        >
+          <View className="bg-white px-7 py-9 rounded-2xl min-h-[300px]">
+            <Text className="font-JakartaExtraBold text-2xl mb-2">
+              Verification
+            </Text>
+            <Text className="font-Jakarta mb-5">
+              We've sent a verification code to {form.email}.
+            </Text>
+            <InputField
+              label={"Code"}
+              icon={icons.lock}
+              placeholder={"12345"}
+              value={verification.code}
+              keyboardType="numeric"
+              onChangeText={(code) =>
+                setVerification({ ...verification, code })
+              }
+            />
+            {verification.error && (
+              <Text className="text-red-500 text-sm mt-1">
+                {verification.error}
+              </Text>
+            )}
+            <CustomButton
+              title="Verify Email"
+              onPress={onPressVerify}
+              className="mt-5 bg-success-500"
+            />
+          </View>
+        </ReactNativeModal>
 
-                    <CustomButton
-                        title="Browse Home"
-                        onPress={() => {
-                        setShowSuccessModal(false)
-                        router.push('/(onboarding)/School')
-                        }}
-                        className="mt-5"
-                    />
-                </View>
+        {/* Modal for OTP verification */}
+        <ReactNativeModal isVisible={showSuccessModal}>
+          <View className="bg-white px-7 py-9 rounded-2xl min-h-[300px]">
+            <Image
+              source={images.check}
+              className="w-[110px] h-[110px] mx-auto my-5"
+            />
+            <Text className="text-3xl font-JakartaBold text-center">
+              Verified
+            </Text>
+            <Text className="text-base text-gray-400 font-Jakarta text-center mt-2">
+              You have successfully verified your account.
+            </Text>
+            <CustomButton
+              title="Browse Home"
+              onPress={() => router.push(`/(onboarding)/School`)}
+              className="mt-5"
+            />
+          </View>
+        </ReactNativeModal>
 
-            </ReactNativeModal>
-        </SafeAreaView>
+        
+        </View>
+      </ScrollView>
     )
 }
 
