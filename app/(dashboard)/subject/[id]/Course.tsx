@@ -18,7 +18,7 @@ const Course = () => {
 
     const handleSearch = () => {
         if (searchQuery.trim()) {
-            router.push(`/(dashboard)/subject/${id}/course_results/Course_result`);
+            router.push(`/(dashboard)/subject/${id}/Course_result`);
         }
     };
 
@@ -26,7 +26,7 @@ const Course = () => {
         setSelectedOption(itemValue);
         if (itemValue) {
 
-            router.push(`/(dashboard)/subject/${id}/course_results/Course_result`);
+            router.push(`/(dashboard)/subject/${id}/Course_result`);
         }
     };
 
