@@ -15,7 +15,7 @@ export async function POST(request: Request) {
         }
 
         const response = await sql`
-            INSERT INTO "onboarding"(user_id, school_level, grade_range)
+            INSERT INTO "Onboarding"(user_id, school_level, grade_range)
             VALUES(${userId}, ${schoolLevel}, ${gradeRange});
         `;
 
