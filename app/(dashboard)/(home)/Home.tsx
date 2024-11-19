@@ -9,6 +9,7 @@ import { getSubjectsByGradeAndSchool } from '@/utils'
 import { Href, router } from 'expo-router'
 import { useUser } from '@clerk/clerk-expo'
 import { fetchAPI, useFetch } from '@/lib/fetch'
+import { images } from '@/constants'
 
 
 
@@ -99,7 +100,10 @@ const Home = () => {
         <View className='flex items-center justify-center'>
           {resultSubjects!.map((subject: any) => (
             <CustomCard 
-              key={subject.subject_id} 
+              key={subject.subject_id}
+              headerImage={images.bg_3} 
+              headingStyle='text-xl'
+              subTitle='Find more about services for your subject'
               label={subject.subject_name}
               onPressAction={() => {onRedirectHandler({subjectName: subject.subject, subjectId: subject.id})}} 
             />
