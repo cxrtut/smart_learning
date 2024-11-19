@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Video } from "expo-av";
+import CustomHeader from '@/components/CustomHeader';
+import colors from "@/constants/colors";
 
 const Course_result = () => {
   const [videos, setVideos] = useState([
@@ -42,7 +44,14 @@ const Course_result = () => {
   };
 
   return (
-    <SafeAreaView className="bg-gray-100 flex-1">
+    <SafeAreaView style={{backgroundColor: colors.PRIMARY}} className="bg-gray-100 flex-1">
+
+       <CustomHeader  
+                title=''
+                showBackButton={true}
+                headerStyles='pr-3'
+            />
+
       {videos.length > 0 && (
         <View className="w-11/12 bg-white rounded-2xl p-4 shadow-md self-center mt-4">
           {/* Video Player using expo-av */}
