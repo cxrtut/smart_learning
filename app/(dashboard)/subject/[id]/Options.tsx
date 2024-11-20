@@ -19,14 +19,20 @@ const Options = () => {
                 <View className='flex items-center justify-center'>
                     <CustomCard 
                         label='Course'
+                        headingStyle='text-lg'
+                        subTitle='Access all courses for this subject'
                         onPressAction={() => {router.push(`/(dashboard)/subject/${id}/Course`)}} 
                     />
                      <CustomCard 
                         label='Homework'
+                        headingStyle='text-lg'
+                        subTitle='Access all homework for this subject'
                         onPressAction={() => {router.push(`/(dashboard)/subject/${id}/Homework`)}} 
                     />
                      <CustomCard 
                         label='Quiz'
+                        headingStyle='text-lg'
+                        subTitle='Access all quizzes for this subject'
                         onPressAction={() => {router.push(`/(dashboard)/subject/${id}/Quiz`)}} 
                     />
                 </View>

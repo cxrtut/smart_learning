@@ -5,20 +5,28 @@ const CustomInput = ({
   value, 
   className, 
   placeholder, 
-  setValue
+  onChangeText,
+  textContentType,
+  placeholderTextColor,
+  secureTextEntry,
 }: {
   value: string, 
-  className: string, 
+  className?: string, 
   placeholder: string, 
-  setValue: () => void
+  onChangeText?: (text: string) => void,
+  textContentType?: TextInputProps['textContentType'],
+  placeholderTextColor: string,
+  secureTextEntry?: boolean
 }) => {
   return (
     <TextInput
         className={`pl-5 text-white border-b-[1px] rounded-lg border-white p-5 w-[90%] ${className}`}
-        onChangeText={setValue}
+        onChangeText={onChangeText}
         value={value}
         placeholder={placeholder}
-        placeholderTextColor={'white'}
+        placeholderTextColor={placeholderTextColor}
+        textContentType={textContentType}
+        secureTextEntry={secureTextEntry}
     />
   )
 }
