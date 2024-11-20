@@ -96,8 +96,8 @@ const Home = () => {
         title={`Hello ${user?.firstName}`}
         showBackButton={false}
       />
-      <ScrollView className='h-full p-3'>
-        <View className='flex items-center justify-center'>
+      <ScrollView className='h-full p-5 pb-3'>
+        <View className='flex items-center justify-center pb-3'>
           {resultSubjects!.map((subject: any) => (
             <CustomCard 
               key={subject.subject_id}
@@ -110,6 +110,9 @@ const Home = () => {
           ))}
         </View>
       </ScrollView>
+      <View className='h-[12%]'>
+
+      </View>
     </SafeAreaView>
   )
 }
