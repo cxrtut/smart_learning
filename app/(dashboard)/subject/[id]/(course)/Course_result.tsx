@@ -3,9 +3,12 @@ import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import colors from "@/constants/colors";
+import { useOnboarding } from '@/context/onboardingContext';
+import CustomHeader from '@/components/CustomHeader';
 
 const Course_result = () => {
     const [videos, setVideos] = useState([]);
+    const { activeSubject } = useOnboarding();
     const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
     const navigation = useNavigation();
 
@@ -28,10 +31,15 @@ const Course_result = () => {
 
     return (
         <SafeAreaView style={{ backgroundColor: colors.PRIMARY, flex: 1 }}>
-
+            <CustomHeader  
+                title="Smart Learning"
+                subtitle={activeSubject?.subjectName}
+                showBackButton={true}
+                headerStyles="pr-3"
+            />
             <TouchableOpacity
                 style={{ marginBottom: 16, padding: 8, backgroundColor: 'white', borderRadius: 999, shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 5 }}
-                onPress={() => navigation.navigate('ResultPage')}
+                onPress={() => navigation.navigate('ResultPage' as never)}
             >
                 <Text style={{ color: '#3b82f6', fontWeight: 'bold' }}>Go to Result Page</Text>
             </TouchableOpacity>

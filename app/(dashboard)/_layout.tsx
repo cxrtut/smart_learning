@@ -8,8 +8,8 @@ const Dashboard = () => {
     <Stack>
         <Stack.Screen name="(home)" options={{ headerShown: false }} />
         <Stack.Screen name="subject/[id]/Options" options={{ headerShown: false }} />
-        <Stack.Screen name="subject/[id]/Course" options={{ headerShown: false }} />
-        <Stack.Screen name="subject/[id]/Homework" options={{ headerShown: false }} />
+        <Stack.Screen name="subject/[id]/(course)" options={{ headerShown: false }} />
+        <Stack.Screen name="subject/[id]/(homework)" options={{ headerShown: false }} />
         <Stack.Screen name="subject/[id]/Quiz" options={{ headerShown: false }} />
     </Stack>
   )
