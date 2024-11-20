@@ -9,6 +9,7 @@ import { getSubjectsByGradeAndSchool } from '@/utils'
 import { Href, router } from 'expo-router'
 import { useUser } from '@clerk/clerk-expo'
 import { fetchAPI, useFetch } from '@/lib/fetch'
+import { images } from '@/constants'
 
 
 
@@ -95,17 +96,23 @@ const Home = () => {
         title={`Hello ${user?.firstName}`}
         showBackButton={false}
       />
-      <ScrollView className='h-full p-3'>
-        <View className='flex items-center justify-center'>
+      <ScrollView className='h-full p-5 pb-3'>
+        <View className='flex items-center justify-center pb-3'>
           {resultSubjects!.map((subject: any) => (
             <CustomCard 
-              key={subject.subject_id} 
+              key={subject.subject_id}
+              headerImage={images.bg_3} 
+              headingStyle='text-xl'
+              subTitle='Find more about services for your subject'
               label={subject.subject_name}
               onPressAction={() => {onRedirectHandler({subjectName: subject.subject, subjectId: subject.id})}} 
             />
           ))}
         </View>
       </ScrollView>
+      <View className='h-[12%]'>
+
+      </View>
     </SafeAreaView>
   )
 }
