@@ -57,7 +57,7 @@ const Course_result = () => {
           {/* Video Player using expo-av */}
           <Video
             source={{ uri: videos[currentVideoIndex].thumbnail }}
-            style={{ width: "100%", height: 200, borderRadius: 12 }}
+            style={{ width: "100%", height: 500, borderRadius: 12 }}
             resizeMode="contain"
             shouldPlay
             isLooping
