@@ -1,3 +1,5 @@
+import { neon } from '@neondatabase/serverless';
+
 import { 
     grade10_12Subjects, 
     grade1_3Subjects, 
@@ -5,50 +7,26 @@ import {
     grade7Subjects, 
     grade8_9Subjects 
 } from "@/constants";
-import { fetchAPI } from "@/lib/fetch";
 
-export const getSubjectsByGradeAndSchool = (grade: string, school: string) => {
-    if(school === '1') {
-        switch(grade) {
-            case '1':
-                return grade1_3Subjects;
-                break;
-            case '2':
-                return grade4_6Subjects;
-                break;
-            case '3':
-                return grade7Subjects;
-                break;
-        }
-    } else {
-        // Secondary school subjects
-        switch(grade) {
-            case '1':
-                return grade8_9Subjects;
-                break;
-            case '2':
-                return grade10_12Subjects;
-                break;
-        }
+export const getSubjectsByGradeAndSchool = async (grade: string, school: string) => {
+    try {
+        const sql = neon(`${process.env.EXPO_PUBLIC_DATABASE_URL as string}`);
+        console.log("Whats Happening")
+        // Ensure the query awaits the asynchronous call
+        const subjects = await sql`
+            SELECT subject_name, subject_id 
+            FROM "Subject" 
+            WHERE grade_range = ${grade} 
+            AND school_level = ${school};
+        ` as {subject_name: string, subject_id: string}[];
+
+        console.log(subjects)
+
+        // Return the subjects as a JSON string (if needed)
+        return subjects;
+    } catch (error) {
+        console.error("Error fetching subjects:", error);
+        throw error; // Optionally, you can handle the error more gracefully here
     }
+    
 };
-
-export const addSubject = (subjects: string[], subject: string) => {
-    if(subjects.includes(subject)) {
-        return subjects.filter((sub) => sub !== subject);
-    }
-    return [...subjects, subject];
-}
-
-export const getSchoolLevelandGradeRange = async () => {
-    try{
-        const result = await fetchAPI('/(api)/onboarding', {
-            method: 'GET',
-          });
-        
-        return result; 
-    } catch(error) {
-        console.log("Error from fetch: ", error);
-        return Response.json({error: error}, { status: 500 });
-    }
-}

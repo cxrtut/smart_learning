@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Video } from "expo-av";
-import CustomHeader from '@/components/CustomHeader';
+import CustomHeader from "@/components/CustomHeader";
 import colors from "@/constants/colors";
+
+const { width: screenWidth } = Dimensions.get("window");
 
 const Course_result = () => {
   const [videos, setVideos] = useState([
@@ -25,72 +27,54 @@ const Course_result = () => {
     },
   ]);
 
-  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-
-  const handleNext = () => {
-    if (currentVideoIndex < videos.length - 1) {
-      setCurrentVideoIndex(currentVideoIndex + 1);
-    } else {
-      console.log("Reached the end of the video list.");
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentVideoIndex > 0) {
-      setCurrentVideoIndex(currentVideoIndex - 1);
-    } else {
-      console.log("Already at the first video.");
-    }
-  };
-
   return (
-    <SafeAreaView style={{backgroundColor: colors.PRIMARY}} className="bg-gray-100 flex-1">
+    <SafeAreaView style={{ backgroundColor: colors.PRIMARY }} className="bg-gray-100 flex-1">
+      <CustomHeader title="Course"
+       showBackButton={true} 
+       headerStyles="pr-3" />
 
-       <CustomHeader  
-                title=''
-                showBackButton={true}
-                headerStyles='pr-3'
+      {/* Horizontal Scrollable Video List */}
+      <ScrollView
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        style={{ flex: 1 }}
+      >
+        {videos.map((video, index) => (
+          <View
+            key={index}
+            style={{
+              width: screenWidth,
+              paddingHorizontal: 16,
+              paddingVertical: 20,
+            }}
+          >
+            {/* Video Player */}
+            <Video
+              source={{ uri: video.thumbnail }}
+              style={{
+                width: "100%",
+                height: 500,
+                borderRadius: 12,
+                backgroundColor: "#000",
+              }}
+              resizeMode="contain"
+              shouldPlay={index === 0} // Only play the first video initially
+              isLooping
             />
 
-      {videos.length > 0 && (
-        <View className="w-11/12 bg-white rounded-2xl p-4 shadow-md self-center mt-4">
-          {/* Video Player using expo-av */}
-          <Video
-            source={{ uri: videos[currentVideoIndex].thumbnail }}
-            style={{ width: "100%", height: 500, borderRadius: 12 }}
-            resizeMode="contain"
-            shouldPlay
-            isLooping
-          />
+            {/* Video Title */}
+            <Text className="text-lg font-semibold mt-4 text-gray-800">
+              {video.title}
+            </Text>
 
-          {/* Video Title */}
-          <Text className="text-lg font-semibold mt-4 text-gray-800">
-            {videos[currentVideoIndex].title}
-          </Text>
-
-          {/* Transcript Box */}
-          <View className="mt-4 p-4 bg-gray-100 rounded-lg">
-            <Text className="text-gray-600">{videos[currentVideoIndex].transcript}</Text>
+            {/* Transcript Box */}
+            <View className="mt-4 p-4 bg-gray-100 rounded-lg">
+              <Text className="text-gray-600">{video.transcript}</Text>
+            </View>
           </View>
-        </View>
-      )}
-
-    
-      <View className="flex-row justify-between mt-6 px-4">
-        <TouchableOpacity
-          className="px-4 py-2 bg-blue-500 rounded-full shadow-md"
-          onPress={handlePrevious}
-        >
-          <Text className="text-white font-bold">Previous</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          className="px-4 py-2 bg-blue-500 rounded-full shadow-md"
-          onPress={handleNext}
-        >
-          <Text className="text-white font-bold">Next</Text>
-        </TouchableOpacity>
-      </View>
+        ))}
+      </ScrollView>
     </SafeAreaView>
   );
 };

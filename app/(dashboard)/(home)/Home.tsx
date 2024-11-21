@@ -5,15 +5,18 @@ import colors from '@/constants/colors'
 import CustomHeader from '@/components/CustomHeader'
 import CustomCard from '@/components/CustomCard'
 import { ActiveSubject, useOnboarding } from '@/context/onboardingContext'
-import { getSchoolLevelandGradeRange, getSubjectsByGradeAndSchool } from '@/utils'
+import { getSubjectsByGradeAndSchool } from '@/utils'
 import { Href, router } from 'expo-router'
 import { useUser } from '@clerk/clerk-expo'
 import { fetchAPI, useFetch } from '@/lib/fetch'
+import { images } from '@/constants'
 
 
 
 const Home = () => {
   const {user} = useUser();
+  const name = "John Doe"
+
   const {
     gradeRange, 
     schoolLevel, 
@@ -23,7 +26,7 @@ const Home = () => {
   } = useOnboarding();
 
   const [loading, setLoading] = useState(true)
-  let resultSubjects = getSubjectsByGradeAndSchool("1", "1")
+  const [resultSubjects, setResultSubjects] = useState<{ subject_name: string; subject_id: string; }[]>([]);
 
 
   useEffect(()  => {
@@ -46,11 +49,33 @@ const Home = () => {
     
   }, [user, router, setGradeRange, setSchoolLevel])
 
+  useEffect(() => {
+    // Ensure gradeRange and schoolLevel are set before running this useEffect
+    if (!gradeRange || !schoolLevel) return;
+  
+    const loadSubjects = async () => {
+      setLoading(true);
+      console.log("Ranges: ", gradeRange, schoolLevel);
+      try {
+        const data = await getSubjectsByGradeAndSchool(gradeRange, schoolLevel);
+        setResultSubjects(data);
+        console.log(data)
+        console.log("Data: ", data[0].subject_name);
+      } catch (error) {
+        console.error("Error loading subjects:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    loadSubjects();
+  }, [gradeRange, schoolLevel])
+
   if (loading) {
     return (
       <SafeAreaView style={{backgroundColor: colors.PRIMARY}} className='flex h-full w-full'>
         <CustomHeader 
-          title={`Hello ${user?.firstName!}`}
+          title={`Hello ${name}`}
           showBackButton={false}
         />
         <View className='flex-1 items-center justify-center'>
@@ -68,20 +93,26 @@ const Home = () => {
   return (
     <SafeAreaView style={{backgroundColor: colors.PRIMARY}} className='flex h-full w-full'>
       <CustomHeader 
-        title={`Hello ${user?.firstName!}`}
+        title={`Hello ${user?.firstName}`}
         showBackButton={false}
       />
-      <ScrollView className='h-full p-3'>
-        <View className='flex items-center justify-center'>
-          {resultSubjects!.map((subject) => (
+      <ScrollView className='h-full p-5 pb-3'>
+        <View className='flex items-center justify-center pb-3'>
+          {resultSubjects!.map((subject: any) => (
             <CustomCard 
-              key={subject.id} 
-              label={subject.subject}
+              key={subject.subject_id}
+              headerImage={images.bg_3} 
+              headingStyle='text-xl'
+              subTitle='Find more about services for your subject'
+              label={subject.subject_name}
               onPressAction={() => {onRedirectHandler({subjectName: subject.subject, subjectId: subject.id})}} 
             />
           ))}
         </View>
       </ScrollView>
+      <View className='h-[12%]'>
+
+      </View>
     </SafeAreaView>
   )
 }
