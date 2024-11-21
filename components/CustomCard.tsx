@@ -1,15 +1,39 @@
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity, ImageSourcePropType } from 'react-native'
 import React from 'react'
+import { Image } from 'react-native'
 
-const CustomCard = ({label, onPressAction}: {label: string, onPressAction?: () => void}) => {
+const CustomCard = ({
+  label,
+  subTitle,
+  headerImage, 
+  headingStyle,
+  onPressAction
+}: {
+  label: string,
+  subTitle?: string,
+  headingStyle?: string,
+  headerImage?: ImageSourcePropType, 
+  onPressAction?: () => void
+}) => {
+
   return (
     <TouchableOpacity 
         onPress={onPressAction}
-        className='w-full p-5 mb-2 bg-white shadow-lg border-[0.5px] mx-5 rounded-xl'
+        className='block rounded-lg shadow-sm bg-white shadow-indigo-100 w-full mb-2'
     >
-        <Text className='font-semibold text-md'>
-            {label}
-        </Text>
+      
+        { headerImage && <Image 
+            source={headerImage} 
+            className='rounded-t-md w-full h-20 object-cover mb-1'
+        />}
+        <View className='p-4'>
+          <Text className={`font-semibold ${headingStyle}`}>
+              {label}
+          </Text>
+          {subTitle && <Text className='font-normal text-sm'>
+              {subTitle}
+          </Text>}
+        </View>
     </TouchableOpacity>
   )
 }
