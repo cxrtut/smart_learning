@@ -12,6 +12,8 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    
+  
     "ios": {
       "supportsTablet": true
     },
@@ -29,14 +31,21 @@
     },
     "plugins": [
       [
-        "expo-router",
+        "expo-router"
+        ,
         {
-          "origin": "https://smartlearning.com/"
+          "origin": "https://uber.com/"
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "9620ad21-2a21-42d3-b6f3-6da05844f724"
+      }
     }
+  
   }
 }

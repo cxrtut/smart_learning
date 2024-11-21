@@ -35,7 +35,7 @@ export const tokenCache = {
 
 export const googleOAuth = async (startOAuthFlow: any) => {
     try {
-      const { createdSessionId, signUp, signIn, setActive } = await startOAuthFlow({
+      const { createdSessionId, signUp, setActive } = await startOAuthFlow({
         redirectUrl: Linking.createURL('/(onboarding)/School', { scheme: 'myapp' }),
       })
 
@@ -64,7 +64,7 @@ export const googleOAuth = async (startOAuthFlow: any) => {
 
       return {
         success: false,
-        code: "cancelled",
+        code: "success",
         message: "An error occurred while authenticating",
       }
         

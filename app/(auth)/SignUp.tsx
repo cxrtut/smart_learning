@@ -10,7 +10,6 @@ import ReactNativeModal from 'react-native-modal'
 import { images } from '@/constants'
 import CustomButton from '@/components/CustomButton'
 import { fetchAPI } from '@/lib/fetch'
-import CustomInput from '@/components/CustomInput'
 
 const SignUp = () => {
     const { isLoaded, signUp, setActive } = useSignUp()
@@ -44,7 +43,6 @@ const SignUp = () => {
     
         try {
           await signUp.create({
-            // firstName: form.name,
             emailAddress: form.email,
             password: form.password,
           })
@@ -107,7 +105,7 @@ const SignUp = () => {
             style={{backgroundColor: colors.PRIMARY}}
             className='flex h-full items-center justify-between py-3 pb-10'
         >
-        <View className='flex pl-5 items-start gap-y-14 w-full'>
+        <View className='flex pl-3 items-start gap-y-14 w-full'>
             <Text 
             className='text-start p-3 pl-5 font-bold text-white text-3xl'
             >
@@ -118,7 +116,8 @@ const SignUp = () => {
                 <Text className='pl-3 text-white font-semibold text-lg'>
                     Register
                 </Text>
-                <CustomInput
+                <TextInput
+                    className='pl-5 text-white border-b-[1px] rounded-xl border-white p-5 w-[90%]'
                     placeholder='Name'
                     value={form.name}
                     onChangeText={newName => setForm({...form, name: newName})}
@@ -126,14 +125,16 @@ const SignUp = () => {
                     placeholderTextColor={'white'}
                 />
 
-                <CustomInput
+                <TextInput
+                    className='pl-5 text-white border-b-[1px] rounded-lg border-white p-5 w-[90%]'
                     placeholder='Email'
                     value={form.email}
                     onChangeText={newEmail => setForm({...form, email: newEmail})}
                     textContentType='emailAddress'
                     placeholderTextColor={'white'}
                 />
-                <CustomInput
+                <TextInput
+                    className='pl-5 text-white border-b-[1px] rounded-lg border-white p-5 w-[90%]'
                     placeholder='Password'
                     value={form.password}
                     onChangeText={newPassword => setForm({...form, password: newPassword})}
@@ -141,7 +142,8 @@ const SignUp = () => {
                     secureTextEntry={true}
                     placeholderTextColor={'white'}
                 />
-                <CustomInput
+                <TextInput
+                    className='pl-5 text-white border-b-[1px] rounded-lg border-white p-5 w-[90%]'
                     placeholder='Confirm Password'
                     value={form.confirmPassword}
                     onChangeText={newConfirmPassword => setForm({...form, confirmPassword : newConfirmPassword})}
@@ -163,13 +165,17 @@ const SignUp = () => {
                         Already have an account? Sign in 
                     </Text>
                 </TouchableOpacity>
-                <CustomButton
-                    title={"Sign In"}
-                    className="w-[70%] mt-[25%] shadow-none bg-white"
-                    bgVariant="outline"
-                    textVariant="secondary"
+                <TouchableOpacity
+                    className='flex items-center justify-center bg-white px-4 p-4 rounded-full mt-[-25%] w-[70%]' 
                     onPress={onSignUpPress}
-                />
+                >
+                    <Text
+                        style={{color: colors.PRIMARY}}
+                        className='font-bold text-lg'
+                    >
+                        Sign Up
+                    </Text>
+                </TouchableOpacity>
             </View>
 
             <ReactNativeModal
