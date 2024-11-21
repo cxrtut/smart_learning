@@ -81,14 +81,14 @@ const Course_result = () => {
           className="px-4 py-2 bg-blue-500 rounded-full shadow-md"
           onPress={handlePrevious}
         >
-          <Text className="text-white-500 font-bold">Previous</Text>
+          <Text className="text-white font-bold">Previous</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           className="px-4 py-2 bg-blue-500 rounded-full shadow-md"
           onPress={handleNext}
         >
-          <Text className="text-white-500 font-bold">Next</Text>
+          <Text className="text-white font-bold">Next</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
