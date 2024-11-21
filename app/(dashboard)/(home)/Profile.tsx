@@ -55,7 +55,7 @@ const Profile = () => {
 
   return (
     <SafeAreaView style={{ backgroundColor: colors.PRIMARY }} className="w-full h-full flex items-center">
-      <View className="p-4 mt-3 mr-[45%]">
+      <View className="p-4 mt-3 mr-[40%]">
         <Text className="text-2xl text-white">Smart Learning</Text>
       </View>
 
@@ -64,15 +64,15 @@ const Profile = () => {
       </View>
 
       <View className="items-center mt-5">
-        <Text className="text-white mt-3 text-2xl font-bold">User Info</Text>
+        <Text className="text-white mt-3 mr-[48%] text-2xl font-bold">User Info</Text>
       </View>
 
-      <View className="rounded-lg mt-2 border border-white" style={{ padding:22, marginHorizontal: 20 }}>
+      <View className="rounded-lg mt-2 border border-white p-6 " >
         <TextInput
           value={name}
           onChangeText={setName}
           placeholder="Name"
-          className="text-white text-lg font-bold border-b border-white mb-5 mt-1"
+          className="text-white text-lg font-bold border-b border-white mb-3 mt-1"
           style={{ color: 'white', fontSize: 18 }}
           editable={false}
         />
@@ -81,15 +81,15 @@ const Profile = () => {
           onChangeText={setEmail}
           placeholder="Email"
           keyboardType="email-address"
-          className="text-white text-lg font-bold border-b border-white mb-5 mt-3"
+          className="text-white text-lg font-bold border-b border-white mb-3 mt-3"
           style={{ color: 'white', fontSize: 18 }}
           editable={false}
         />
         <Text
-          className="text-white text-lg font-bold border-b border-white mb-5 mt-3"
+          className="text-white text-lg font-bold border-b border-white mb-3 mt-3"
           style={{ color: 'white', fontSize: 18 }}
         >
-          {currentSchoolLevel}
+         School level: {currentSchoolLevel}
         </Text>
         <Text
           className="text-white text-lg font-bold border-b border-white mb-5 mt-3"
