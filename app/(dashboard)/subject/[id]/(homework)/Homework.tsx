@@ -1,60 +1,45 @@
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, Alert, Switch } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Href, router, useLocalSearchParams, useRouter } from 'expo-router';
 import { useOnboarding } from '@/context/onboardingContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomHeader from '@/components/CustomHeader';
 import colors from '@/constants/colors';
-import { Camera, CameraPermissionStatus } from 'react-native-vision-camera'
-import * as ExpoMediaLibrary from 'expo-media-library'
 import { Image } from 'react-native';
 import { images } from '@/constants';
 import ChatInputSection from '@/components/ChatInputSection';
+import ReactNativeModal from 'react-native-modal';
+import { Camera, CameraPermissionStatus } from 'react-native-vision-camera';
 
 const Homework = () => {
     const { media, type } = useLocalSearchParams();
     const {activeSubject} = useOnboarding();
 
     const [isChatActive, setIsChatActive] = useState(false)
+    const [showRequestModal, setShowRequestModal] = useState(false)
 
-    
-    //Camera Permissions
     const [cameraPermissionStatus, setCameraPermissionStatus] = 
     React.useState<CameraPermissionStatus>("not-determined")
-    const [microphonePermissionStatus, setMicrophonePermissionStatus] = 
-    React.useState<CameraPermissionStatus>("not-determined")
-    
-    const [mediaLibraryPermission, requestMediaLibraryPermission] = 
-    ExpoMediaLibrary.usePermissions()
-    
-    const requestMicrophonePermission = async () => {
-        const permissions = await Camera.requestMicrophonePermission()
-        setMicrophonePermissionStatus(permissions)
-    }
-    
+
     const requestCameraPermission = async () => {
+        console.log("Requesting camera permission")
         const permissions = await Camera.requestCameraPermission()
         setCameraPermissionStatus(permissions)
+        console.log("Camera: ", permissions)
     }
     
-    //get permissions in useEffect
-    useEffect(() => {
-        requestCameraPermission()
-        requestMicrophonePermission()
-        const getMediaLibraryPermission = async () => {
-            await requestMediaLibraryPermission()
-        }
-        getMediaLibraryPermission()
-    }, [cameraPermissionStatus, microphonePermissionStatus, mediaLibraryPermission])
+    //Camera Permissions
+    const handleCameraPermission = async () => {
+            setShowRequestModal(false)
+            requestCameraPermission() 
+    }
 
     const handleContinue = () => {
-        if(cameraPermissionStatus === "granted" && 
-            microphonePermissionStatus === "granted" ||
-            mediaLibraryPermission?.granted
-        ) {
-            router.push("/(dashboard)/subject/[id]/(homework)Camera" as Href)
+        console.log("Camera Permission status", cameraPermissionStatus)
+        if(cameraPermissionStatus === "granted") {
+            router.push('/(dashboard)/subject/[id]/(homework)/Camera')
         } else {
-            Alert.alert("Permissions", "Please go to settings and enable permissions.")
+            setShowRequestModal(true)
         }
     }
 
@@ -94,6 +79,24 @@ const Homework = () => {
                 onContinue={handleContinue}
             />
 
+            <ReactNativeModal isVisible={showRequestModal} onBackdropPress={() => setShowRequestModal(false)}>
+                <View className='min-h-[200px] rounded-2xl p-5 bg-white flex'>
+                    <Text className='text-md'>You must grant SmartLearning access to your camera in order to take a photo</Text>
+                    <View className='flex flex-row justify-between mt-5'>
+                        <TouchableOpacity
+                            onPress={() => setShowRequestModal(false)}
+                        >
+                            <Text>Cancel</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={handleCameraPermission}
+                        >
+                            <Text className='font-semibold'>Request Permission</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+            </ReactNativeModal>
 
         </SafeAreaView>
     )

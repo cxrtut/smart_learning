@@ -1,20 +1,22 @@
 import { View, Text, Platform, Linking } from 'react-native'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Camera, useCameraDevice, useCameraPermission } from 'react-native-vision-camera'
-import { Href, useRouter } from 'expo-router'
+import { Camera, CameraPermissionStatus, useCameraDevice, useCameraPermission } from 'react-native-vision-camera'
+import { Href, Redirect, useRouter } from 'expo-router'
 import { BlurView } from 'expo-blur'
 import { TouchableHighlight } from 'react-native'
 import { FontAwesome5 } from '@expo/vector-icons'
 import CameraButton from '@/components/CameraButton'
 import { StyleSheet } from 'react-native'
 import { StatusBar } from 'react-native'
+import * as ExpoMediaLibrary from 'expo-media-library'
 import colors from '@/constants/colors'
 
 const CameraScreen = () => {
   const {hasPermission} = useCameraPermission()
-  const microphonePermission = Camera.getMicrophonePermissionStatus()
-  const redirectToPermissions = !hasPermission || microphonePermission === 'not-determined'
+  const redirectToPermissions = !hasPermission
+  console.log("Has permission: ", hasPermission)
+  
   const [cameraPosition, setCameraPosition] = useState<"front" | "back">(
     "back"
   );
@@ -25,6 +27,10 @@ const CameraScreen = () => {
 
   const camera = useRef<Camera>(null);
   const device = useCameraDevice(cameraPosition)
+
+  console.log("Device: ", device?.name)
+  console.log("StatusBar: ", StatusBar.currentHeight)
+  console.log("Android: ", Platform.OS)
 
   const [zoom, setZoom] = React.useState(device?.neutralZoom);
   const [exposure, setExposure] = React.useState(0);
@@ -43,12 +49,15 @@ const CameraScreen = () => {
 
         router.push({
           pathname: '/(dashboard)/subject/[id]/(homework)/Homework',
+          //@ts-ignore
           params: {media: photo.path, type: 'photo'}
         })
     } catch (e) {
       console.log(e);
     }
   }
+
+  if(redirectToPermissions) return <Redirect href={'/(dashboard)/subject/[id]/(homework)/Homework' as Href} />
 
   return (
     <SafeAreaView style={styles.container} >
@@ -88,11 +97,6 @@ const CameraScreen = () => {
         </View>
 
         <View style={{flex: 1, backgroundColor: "black"}}>
-          {/* <View style={{flex: 0.7}}>
-            <ThemedText>Max FPS: {device.formats[0].maxFps}</ThemedText>
-            <ThemedText>Width: {device.formats[0].photoWidth} Height: {device.formats[0].photoHeight}</ThemedText>
-            <ThemedText>Camera: {device.name}</ThemedText>
-          </View> */}
 
           <View style={{flex: 0.7, flexDirection: "row",justifyContent: "space-evenly",}}>
             <CameraButton
