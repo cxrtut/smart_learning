@@ -1,5 +1,5 @@
 import { View, Text, Platform, Linking } from 'react-native'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Camera, useCameraDevice } from 'react-native-vision-camera'
 import { Href, useRouter } from 'expo-router'
@@ -9,7 +9,6 @@ import { FontAwesome5 } from '@expo/vector-icons'
 import CameraButton from '@/components/CameraButton'
 import { StyleSheet } from 'react-native'
 import { StatusBar } from 'react-native'
-import * as ExpoMediaLibrary from 'expo-media-library'
 import colors from '@/constants/colors'
 
 const CameraScreen = () => {
@@ -21,10 +20,6 @@ const CameraScreen = () => {
 
   const camera = useRef<Camera>(null);
   const device = useCameraDevice(cameraPosition)
-
-  console.log("Device: ", device?.name)
-  console.log("StatusBar: ", StatusBar.currentHeight)
-  console.log("Android: ", Platform.OS)
 
   const [zoom, setZoom] = React.useState(device?.neutralZoom);
   const [exposure, setExposure] = React.useState(0);
@@ -50,8 +45,6 @@ const CameraScreen = () => {
       console.log(e);
     }
   }
-
-  if(redirectToPermissions) return <Redirect href={'/(dashboard)/subject/[id]/(homework)/Homework' as Href} />
 
   return (
     <SafeAreaView style={styles.container} >
