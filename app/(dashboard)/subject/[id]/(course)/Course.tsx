@@ -3,7 +3,7 @@ import React, { useRef, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import colors from '@/constants/colors';
 import CustomHeader from '@/components/CustomHeader';
-import { useLocalSearchParams } from 'expo-router';
+import { Href, router, useLocalSearchParams } from 'expo-router';
 import { useOnboarding } from '@/context/onboardingContext';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { Picker } from '@react-native-picker/picker';
@@ -14,8 +14,12 @@ const Course = () => {
   const searchInputRef = useRef<TextInput>(null);
   const [selectedOption, setSelectedOption] = useState(""); 
 
+  if(selectedOption === "Option1") {
+    router.push("/(dashboard)/subject/[id]/(course)/Course_result" as Href)
+  }
+
   return (
-    <SafeAreaView style={{ backgroundColor: colors.PRIMARY }} className="flex h-full w-full">
+    <SafeAreaView style={{ backgroundColor: colors.PRIMARY }} className="flex h-full w-full p-3">
       <CustomHeader  
           title="Smart Learning"
           subtitle={activeSubject?.subjectName}
@@ -24,7 +28,7 @@ const Course = () => {
       />
 
       {/* Search Bar with Icon Button */}
-      <View className="flex-row items-center p-8">
+      <View className="flex flex-row items-center p-8">
         <TextInput
           ref={searchInputRef}
           placeholder="Search"
