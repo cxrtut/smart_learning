@@ -22,10 +22,8 @@ const Homework = () => {
     React.useState<CameraPermissionStatus>("not-determined")
 
     const requestCameraPermission = async () => {
-        console.log("Requesting camera permission")
         const permissions = await Camera.requestCameraPermission()
         setCameraPermissionStatus(permissions)
-        console.log("Camera: ", permissions)
     }
     
     //Camera Permissions
@@ -35,7 +33,6 @@ const Homework = () => {
     }
 
     const handleContinue = () => {
-        console.log("Camera Permission status", cameraPermissionStatus)
         if(cameraPermissionStatus === "granted") {
             router.push('/(dashboard)/subject/[id]/(homework)/Camera')
         } else {
@@ -54,7 +51,7 @@ const Homework = () => {
                     headerStyles='pr-3'
                 />
 
-                {isChatActive === false && <View className='flex items-center justify-center'>
+                {!isChatActive && <View className='flex items-center justify-center'>
                     <Image
                     source={images.onboarding13}
                     style={{ width: 400, height: 650 }}

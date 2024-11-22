@@ -1,25 +1,18 @@
 import { View, Text, Platform, Linking } from 'react-native'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Camera, CameraPermissionStatus, useCameraDevice, useCameraPermission } from 'react-native-vision-camera'
-import { Href, Redirect, useRouter } from 'expo-router'
+import { Camera, useCameraDevice } from 'react-native-vision-camera'
+import { Href, useRouter } from 'expo-router'
 import { BlurView } from 'expo-blur'
 import { TouchableHighlight } from 'react-native'
 import { FontAwesome5 } from '@expo/vector-icons'
 import CameraButton from '@/components/CameraButton'
 import { StyleSheet } from 'react-native'
 import { StatusBar } from 'react-native'
-import * as ExpoMediaLibrary from 'expo-media-library'
 import colors from '@/constants/colors'
 
 const CameraScreen = () => {
-  const {hasPermission} = useCameraPermission()
-  const redirectToPermissions = !hasPermission
-  console.log("Has permission: ", hasPermission)
-  
-  const [cameraPosition, setCameraPosition] = useState<"front" | "back">(
-    "back"
-  );
+  const [cameraPosition, setCameraPosition] = useState<"front" | "back">("back");
   const [showZoomControls, setShowZoomControls] = useState(false);
   const [showExposureControls, setShowExposureControls] = useState(false); 
 
@@ -27,10 +20,6 @@ const CameraScreen = () => {
 
   const camera = useRef<Camera>(null);
   const device = useCameraDevice(cameraPosition)
-
-  console.log("Device: ", device?.name)
-  console.log("StatusBar: ", StatusBar.currentHeight)
-  console.log("Android: ", Platform.OS)
 
   const [zoom, setZoom] = React.useState(device?.neutralZoom);
   const [exposure, setExposure] = React.useState(0);
@@ -57,8 +46,6 @@ const CameraScreen = () => {
     }
   }
 
-  if(redirectToPermissions) return <Redirect href={'/(dashboard)/subject/[id]/(homework)/Homework' as Href} />
-
   return (
     <SafeAreaView style={styles.container} >
       <View style={{flex:3, borderRadius: 10, overflow: "hidden", backgroundColor: "black"}}>
@@ -74,40 +61,18 @@ const CameraScreen = () => {
             video
             photo
           />
-          <BlurView
-            intensity={100}
-            tint="systemThinMaterialDark"
-            style={{
-              flex: 1,
-              position: "absolute",
-              bottom: 0,
-              right: 0,
-              padding: 10,
-            }}
-            experimentalBlurMethod="dimezisBlurView"
-          >
-            <Text
-              style={{
-                color: "white",
-              }}
-            >
-              Exposure: {exposure} | Zoom: x{zoom}
-            </Text>
-          </BlurView>
         </View>
 
         <View style={{flex: 1, backgroundColor: "black"}}>
 
           <View style={{flex: 0.7, flexDirection: "row",justifyContent: "space-evenly",}}>
             <CameraButton
-                iconName={torch === "on" ? "flashlight" : "flashlight-outline"}
-                onPress={() => setTorch((t) => (t === "off" ? "on" : "off"))}
-                containerStyle={{ alignSelf: "center" }}
-              />
+              iconName={torch === "on" ? "flashlight" : "flashlight-outline"}
+              onPress={() => setTorch((t) => (t === "off" ? "on" : "off"))}
+              containerStyle={{ alignSelf: "center" }}
+            />
             <CameraButton
-              iconName={
-                flash === "on" ? "flash-outline" : "flash-off-outline"
-              }
+              iconName={flash === "on" ? "flash-outline" : "flash-off-outline"}
               onPress={() => setFlash((f) => (f === "off" ? "on" : "off"))}
               containerStyle={{ alignSelf: "center" }}
             />
@@ -141,26 +106,11 @@ const CameraScreen = () => {
               justifyContent: "space-evenly",
               alignItems: "center",
             }}>
-              <CameraButton
-                iconSize={40}
-                title="+/-"
-                onPress={() => setShowZoomControls((s) => !s)}
-                containerStyle={{ alignSelf: "center" }}
-              />
-
               <TouchableHighlight onPress={takePicture}>
                 <FontAwesome5 name="dot-circle" size={55} color="white" />
               </TouchableHighlight>
-
-              <CameraButton
-                iconSize={40}
-                title="1x"
-                onPress={() => setShowExposureControls((s) => !s)}
-                containerStyle={{ alignSelf: "center" }}
-              />
           </View>
         </View>
-
     </SafeAreaView>
   )
 }
