@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, TextInput } from 'react-native'
-import React, { useState } from 'react'
+import React, { Dispatch, SetStateAction, useState } from 'react'
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import { ArrowRight, Camera as Cam, File, Plus } from "lucide-react-native";
@@ -8,21 +8,28 @@ import { useRouter } from 'expo-router'
 const ChatInputSection = ({
     isChatActive, 
     setIsChatActive,
-    onContinue
+    onContinue,
+    value,
+    setInputText,
+    sendMessage
 } : {
     isChatActive: boolean,
     setIsChatActive: React.Dispatch<React.SetStateAction<boolean>>,
-    onContinue?: () => void
+    onContinue?: () => void,
+    value?: string,
+    setInputText?: Dispatch<SetStateAction<string>>,
+    sendMessage?: () => Promise<void>
 }) => {
 
     const [isKeyboardActive, setIsKeyboardActive] = useState(false)
     const [fileName, setFileName] = useState("")
     const [fileContents, setfileContents] = useState("")
-    const [chatValue, setChatValue] = useState("")
 
     const displayChat = () => {
         console.log("Chat Displayed")
-        setChatValue("")
+        setInputText!('')
+
+        sendMessage!()
     }
 
     let pdfResource = {
@@ -49,6 +56,7 @@ const ChatInputSection = ({
             console.log(error)
         }
     }
+
 
     return (
         <View className="flex flex-row w-full gap-x-2 p-0 pt-0 m-0 items-center justify-between">
@@ -91,10 +99,8 @@ const ChatInputSection = ({
                         onFocus={() => setIsKeyboardActive(true)}
                         onBlur={() => setIsKeyboardActive(false)}
                         onTouchStart={() => setIsKeyboardActive(true)}
-                        value={chatValue}
-                        onChangeText={(text) => {
-                            setChatValue(text);
-                        }}
+                        value={value}
+                        onChangeText={(text) => setInputText!(text)}
                         onChange={() => {
                             setIsKeyboardActive(true);
                         }}
@@ -103,7 +109,9 @@ const ChatInputSection = ({
                     />
                     <TouchableOpacity
                         onPressIn={() => setIsChatActive(true)}
-                        onPress={isChatActive ? displayChat : () => console.log("not chat active")}
+                        onPress={
+                            isChatActive ? displayChat : () => console.log("not chat active")
+                        }
                         className="border-gray-500 border p-3 mr-2 rounded-full flex items-center justify-center bg-white"
                     >
                         <ArrowRight color="gray" size={25} />
