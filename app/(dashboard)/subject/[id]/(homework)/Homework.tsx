@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity, Alert, Switch } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, Alert, Switch, ScrollView, FlatList } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Href, router, useLocalSearchParams, useRouter } from 'expo-router';
 import { useOnboarding } from '@/context/onboardingContext';
@@ -11,6 +11,7 @@ import ChatInputSection from '@/components/ChatInputSection';
 import ReactNativeModal from 'react-native-modal';
 import { Camera, CameraPermissionStatus } from 'react-native-vision-camera';
 import OpenAI from 'openai';
+import { DarkTheme } from '@react-navigation/native';
 
 interface Message{
     id: string;
@@ -26,19 +27,73 @@ const openai = new OpenAI({
 const Homework = () => {
     const { media, type } = useLocalSearchParams();
     const {activeSubject} = useOnboarding();
+    const {id} = useLocalSearchParams<{id:string}>();
 
+    // messages
+    const [messages, setMessages] = useState<Message[]>([]);
+    const [inputText, setInputText] = useState('');
+    
+    const [loading, setLoading] = useState(false); 
     const [isChatActive, setIsChatActive] = useState(false)
     const [showRequestModal, setShowRequestModal] = useState(false)
 
     const [cameraPermissionStatus, setCameraPermissionStatus] = 
     React.useState<CameraPermissionStatus>("not-determined")
 
+    const sendMessage = async() =>{
+        if(inputText.trim().length === 0) return;
+
+        // when the user adds a message
+        const userMessage: Message = { id: Date.now().toString(), type: 'text', content: inputText, sender: 'user'};
+        setMessages((prev) => [...prev, userMessage]);
+        setInputText('');
+
+        // OpenAI response
+        setLoading(true);
+        try{
+            const response = await openai.chat.completions.create({
+                model: 'gpt-3.5-turbo',
+                messages: [
+                    { role: 'system', content: 'You are a helpful assistant.'},
+                    ...messages.map((msg) => ({
+                        role: msg.sender === 'user' ? 'user' : 'assistant',
+                        content: msg.content,
+                    })),
+                    { role: 'user', content: inputText},
+                ],
+            });
+
+            const aiMessage: Message = {
+                id: Date.now().toString(),
+                type: 'text',
+                content: response.choices[0]?.message?.content || 'Sorry, I did not understand that...',
+                sender: 'system',
+            };
+            setMessages((prev) => [...prev, aiMessage]);
+        } catch (error){
+            console.error('Error generating AI response:', error);
+        }finally{
+            setLoading(false);
+        }
+    };
+
+    // rendering messages
+    const renderMessage = ({ item }: { item: Message}) => (
+        <View
+        className={`my-1 p-2 rounded-lg max-w-3/4 ${
+          item.sender === 'user' ? 'bg-blue-500 self-end' : 'bg-gray-300 self-start'
+        }`}>
+        <Text className={item.sender === 'user' ? 'text-white' : 'text-black'}>
+          {item.content}
+        </Text>
+      </View>
+    );
+
+
     const requestCameraPermission = async () => {
         const permissions = await Camera.requestCameraPermission()
         setCameraPermissionStatus(permissions)
     }
-
-    
     
     //Camera Permissions
     const handleCameraPermission = async () => {
@@ -53,8 +108,6 @@ const Homework = () => {
             setShowRequestModal(true)
         }
     }
-
-
     return (
         <SafeAreaView style={{backgroundColor: colors.PRIMARY}} className='flex h-full w-full justify-between'>
             <View className='flex h-[70%] w-full'>
@@ -78,7 +131,13 @@ const Homework = () => {
                 </View>}
 
                 {isChatActive && <View className='flex-1 items-center justify-center'>
-                    <Text className='text-white'>Chat Active</Text>
+
+                    <FlatList
+                        className = {'flex-1 p-8'}
+                        data = {messages}
+                        renderItem={renderMessage}
+                        keyExtractor={(item) => item.id}
+                    />
                     </View>
                 }
 
@@ -88,6 +147,9 @@ const Homework = () => {
                 isChatActive={isChatActive}
                 setIsChatActive={setIsChatActive}
                 onContinue={handleContinue}
+                value={inputText}
+                setInputText={setInputText}
+                sendMessage={sendMessage}
             />
 
             <ReactNativeModal isVisible={showRequestModal} onBackdropPress={() => setShowRequestModal(false)}>
