@@ -1,7 +1,7 @@
 import { View, Text, Platform, Linking } from 'react-native'
 import React, { useRef, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Camera, useCameraDevice } from 'react-native-vision-camera'
+import { Camera, useCameraDevice, useCameraFormat } from 'react-native-vision-camera'
 import { Href, useRouter } from 'expo-router'
 import { BlurView } from 'expo-blur'
 import { TouchableHighlight } from 'react-native'
@@ -20,6 +20,9 @@ const CameraScreen = () => {
 
   const camera = useRef<Camera>(null);
   const device = useCameraDevice(cameraPosition)
+  const format = useCameraFormat(device, [
+    { photoHdr: true },
+  ])
 
   const [zoom, setZoom] = React.useState(device?.neutralZoom);
   const [exposure, setExposure] = React.useState(0);
@@ -53,6 +56,8 @@ const CameraScreen = () => {
             ref={camera}
             style={{flex: 1}} 
             device={device!} 
+            format={format}
+            photoHdr={format?.supportsPhotoHdr}
             isActive
             zoom={zoom}
             resizeMode='cover'
