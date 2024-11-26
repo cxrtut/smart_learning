@@ -10,6 +10,18 @@ import { images } from '@/constants';
 import ChatInputSection from '@/components/ChatInputSection';
 import ReactNativeModal from 'react-native-modal';
 import { Camera, CameraPermissionStatus } from 'react-native-vision-camera';
+import OpenAI from 'openai';
+
+interface Message{
+    id: string;
+    type: 'text';
+    content: string;
+    sender: 'user' | 'system';
+}
+
+const openai = new OpenAI({
+    apiKey: "MY_OPENAI_KEY",
+})
 
 const Homework = () => {
     const { media, type } = useLocalSearchParams();
@@ -25,6 +37,8 @@ const Homework = () => {
         const permissions = await Camera.requestCameraPermission()
         setCameraPermissionStatus(permissions)
     }
+
+    
     
     //Camera Permissions
     const handleCameraPermission = async () => {
