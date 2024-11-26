@@ -80,7 +80,7 @@ const Homework = () => {
     // rendering messages
     const renderMessage = ({ item }: { item: Message}) => (
         <View
-        className={`my-1 p-2 rounded-lg max-w-3/4 ${
+        className={`flex my-1 p-2 rounded-lg max-w-3/4 ${
           item.sender === 'user' ? 'bg-blue-500 self-end' : 'bg-gray-300 self-start'
         }`}>
         <Text className={item.sender === 'user' ? 'text-white' : 'text-black'}>
