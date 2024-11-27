@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity, Alert, Switch, ScrollView, FlatList } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, Alert, Switch, ScrollView, FlatList, KeyboardAvoidingView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Href, router, useLocalSearchParams, useRouter } from 'expo-router';
 import { useOnboarding } from '@/context/onboardingContext';
@@ -12,6 +12,7 @@ import ReactNativeModal from 'react-native-modal';
 import { Camera, CameraPermissionStatus } from 'react-native-vision-camera';
 import OpenAI from 'openai';
 import { DarkTheme } from '@react-navigation/native';
+import { Platform } from 'react-native';
 
 interface Message{
     id: string;
@@ -21,13 +22,14 @@ interface Message{
 }
 
 const openai = new OpenAI({
-    apiKey: "MY_OPENAI_KEY",
-})
+    apiKey: process.env.EXPO_PUBLIC_OPENAI_API_KEY,
+});
 
 const Homework = () => {
     const { media, type } = useLocalSearchParams();
     const {activeSubject} = useOnboarding();
     const {id} = useLocalSearchParams<{id:string}>();
+
 
     // messages
     const [messages, setMessages] = useState<Message[]>([]);
@@ -78,16 +80,23 @@ const Homework = () => {
     };
 
     // rendering messages
-    const renderMessage = ({ item }: { item: Message}) => (
+    const renderMessage = ({ item }: { item: Message}) => {
+        return (
         <View
-        className={`flex my-1 p-2 rounded-lg max-w-3/4 ${
-          item.sender === 'user' ? 'bg-blue-500 self-end' : 'bg-gray-300 self-start'
-        }`}>
-        <Text className={item.sender === 'user' ? 'text-white' : 'text-black'}>
-          {item.content}
+            style={{
+                alignSelf: item.sender === "user" ? "flex-end" : "flex-start",
+                backgroundColor: item.sender === "user" ? colors.PRIMARY : "#636360",
+                padding: 10,
+                borderRadius: 10,
+                marginVertical: 5,
+                maxWidth: "75%",
+            }}
+        >
+        <Text style={{ color: item.sender === "user" ? "white" : "white" }}>
+            {item.content}
         </Text>
       </View>
-    );
+    )};
 
 
     const requestCameraPermission = async () => {
@@ -108,9 +117,10 @@ const Homework = () => {
             setShowRequestModal(true)
         }
     }
+
     return (
         <SafeAreaView style={{backgroundColor: colors.PRIMARY}} className='flex h-full w-full justify-between'>
-            <View className='flex h-[70%] w-full'>
+            <View className='flex-1 h-[70%] w-full'>
                 <CustomHeader  
                     title='Homework'
                     subtitle={activeSubject?.subjectName}
@@ -130,16 +140,17 @@ const Homework = () => {
                     </Text> */}
                 </View>}
 
-                {isChatActive && <View className='flex-1 items-center justify-center'>
-
-                    <FlatList
-                        className = {'flex-1 p-8'}
-                        data = {messages}
-                        renderItem={renderMessage}
-                        keyExtractor={(item) => item.id}
-                    />
+                {isChatActive && (
+                    <View style={{ backgroundColor: "#c9c8c5", padding: 10 }} className={'flex-1'}>
+                        <FlatList
+                            className = {'flex-1 p-8 mt-2'}
+                            data = {messages}
+                            renderItem={renderMessage}
+                            keyExtractor={(item) => item.id}
+                            contentContainerStyle={{ paddingBottom: 10 }}
+                        />
                     </View>
-                }
+                )}
 
             </View>
 
