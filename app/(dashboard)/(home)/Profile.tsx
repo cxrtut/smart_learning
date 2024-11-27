@@ -1,4 +1,4 @@
-import { View, Text, TextInput } from 'react-native';
+import { View, Text, TextInput, ImageBackground } from 'react-native';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import colors from '@/constants/colors';
@@ -6,12 +6,17 @@ import { useClerk } from '@clerk/clerk-expo';
 import CustomButton from '@/components/CustomButton';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { useOnboarding } from '@/context/onboardingContext';
+import CustomHeader from '@/components/CustomHeader';
+import { Image } from 'react-native';
+import { images } from '@/constants';
+import CustomCard from '@/components/CustomCard';
 
 const Profile = () => {
   const { user, signOut } = useClerk();
 
   const [name, setName] = useState(user?.firstName || '');
   const [email, setEmail] = useState(user?.emailAddresses?.[0]?.emailAddress || '');
+  const userImage = user?.imageUrl;
 
   const { schoolLevel, gradeRange } = useOnboarding();
 
@@ -55,19 +60,59 @@ const Profile = () => {
 
   return (
     <SafeAreaView style={{ backgroundColor: colors.PRIMARY }} className="w-full h-full flex items-center">
-      <View className="p-4 mt-3 mr-[40%]">
-        <Text className="text-2xl text-white">Smart Learning</Text>
+      <CustomHeader 
+          title="Smart Learning"
+          showBackButton={false}
+      />
+
+      <View className="flex w-full items-center bg-white h-40">
+        <ImageBackground
+          source={images.bg_3}
+          className='w-full h-full'
+        />
+        {userImage ? <Image
+          source={{ uri: userImage }}
+          className='w-[200px] h-[200px] rounded-full border-[15px] border-black absolute top-10'
+        /> : <FontAwesome name="user" size={100} color="black" style={{ top: 10 }} />}
       </View>
 
-      <View className="items-center mt-10">
-        <FontAwesome name="user-circle" size={200} color="white" />
+      <View className='mt-24 flex h-full w-full px-5'>
+        <CustomCard 
+            label='Username'
+            headingStyle='text-lg'
+            subTitle={name}
+        />
+        <CustomCard 
+            label='Email' 
+            headingStyle='text-lg'
+            subTitle={email}
+        />
+        <CustomCard 
+            label='School level'
+            headingStyle='text-lg'
+            subTitle={currentSchoolLevel}
+        />
+        <CustomCard 
+            label='Grade Level'
+            headingStyle='text-lg'
+            subTitle={currentGradeLevel}
+        />
+        <View className='flex w-full items-center justify-center mt-4'>
+          <CustomButton
+            title="Sign Out"
+            className="w-[55%] bg-white"
+            bgVariant="outline"
+            textVariant="secondary"
+            onPress={() => signOut()}
+          />
+        </View>
       </View>
 
-      <View className="items-center mt-5">
-        <Text className="text-white mt-3 mr-[48%] text-2xl font-bold">User Info</Text>
-      </View>
+      {/* <View className="mt-5">
+        <Text className="text-white mt-3 mr-[62%] text-2xl font-bold">User Info</Text>
+      </View> */}
 
-      <View className="rounded-lg mt-2 border border-white p-6 " >
+      {/* <View className="rounded-lg mt-2 border-[0.5px] border-white p-6 w-[90%] bg-white" >
         <TextInput
           value={name}
           onChangeText={setName}
@@ -86,26 +131,18 @@ const Profile = () => {
           editable={false}
         />
         <Text
-          className="text-white text-lg font-bold border-b border-white mb-3 mt-3"
-          style={{ color: 'white', fontSize: 18 }}
+          className="text-gray-700 text-lg font-normal border-b-[0.5px] border-white mb-3 mt-3"
         >
          School level: {currentSchoolLevel}
         </Text>
         <Text
-          className="text-white text-lg font-bold border-b border-white mb-5 mt-3"
-          style={{ color: 'white', fontSize: 18 }}
+          className="text-gray-700 text-lg font-normal border-b border-white mb-5 mt-3"
         >
           Grade Level: {currentGradeLevel || 'N/A'}
         </Text>
-      </View>
+      </View> */}
 
-      <CustomButton
-        title="Sign Out"
-        className="w-[55%] mt-[40] bg-white"
-        bgVariant="outline"
-        textVariant="secondary"
-        onPress={() => signOut()}
-      />
+      
     </SafeAreaView>
   );
 };
