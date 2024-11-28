@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import colors from '@/constants/colors'
 import CustomHeader from '@/components/CustomHeader'
 import CustomCard from '@/components/CustomCard'
-import { router, useLocalSearchParams } from 'expo-router'
+import { Href, router, useLocalSearchParams } from 'expo-router'
 
 const Options = () => {
     const {id} = useLocalSearchParams<{id:string}>();
@@ -33,7 +33,7 @@ const Options = () => {
                         label='Quiz'
                         headingStyle='text-lg'
                         subTitle='Access all quizzes for this subject'
-                        onPressAction={() => {router.push(`/(dashboard)/subject/${id}/Quiz`)}} 
+                        onPressAction={() => {router.push(`/(dashboard)/subject/${id}/(quiz)/SelectTopic` as Href)}} 
                     />
                 </View>
             </ScrollView>

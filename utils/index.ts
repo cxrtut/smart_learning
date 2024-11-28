@@ -31,6 +31,32 @@ export const getSubjectsByGradeAndSchool = async (grade: string, school: string)
     
 };
 
+export const getVideoTitle= async (id: string) => {
+    try {
+        const sql = neon(`${process.env.EXPO_PUBLIC_DATABASE_URL as string}`);
+        const response = await sql`
+            SELECT  
+                s.subject_name, 
+                sv.title 
+            FROM 
+                "Onboarding" o
+            JOIN 
+                "Subject" s ON s.grade_range = o.grade_range AND s.school_level = o.school_level
+            JOIN 
+                "SubjectVideos" sv ON sv.subject_id = s.subject_id
+            WHERE 
+                o.user_id = ${id};
+        ` as {subject_name: string; title: string; }[];
+
+        return response;
+    } catch (error) {
+        console.error("Error fetching video URLs:", error);
+        throw new Error("Failed to fetch video data. Please try again later.");
+    }
+};
+
+
+
 
 
 

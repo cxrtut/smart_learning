@@ -10,7 +10,7 @@ const Dashboard = () => {
         <Stack.Screen name="subject/[id]/Options" options={{ headerShown: false }} />
         <Stack.Screen name="subject/[id]/Course" options={{ headerShown: false }} />
         <Stack.Screen name="subject/[id]/Homework" options={{ headerShown: false }} />
-        <Stack.Screen name="subject/[id]/Quiz" options={{ headerShown: false }} />
+        <Stack.Screen name="subject/[id]/(quiz)" options={{ headerShown: false }} />
     </Stack>
   )
 }

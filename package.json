@@ -23,8 +23,8 @@
     "@react-navigation/bottom-tabs": "^6.6.1",
     "@react-navigation/drawer": "^6.7.2",
     "@react-navigation/native": "^6.0.2",
-    "dotenv": "^16.4.5",
     "axios": "^1.7.7",
+    "dotenv": "^16.4.5",
     "expo": "^51.0.38",
     "expo-av": "~14.0.7",
     "expo-checkbox": "~3.0.0",
@@ -41,6 +41,7 @@
     "expo-web-browser": "~13.0.3",
     "lucide-react-native": "^0.453.0",
     "nativewind": "^2.0.11",
+    "openai": "^4.73.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.74.5",
@@ -55,12 +56,9 @@
     "react-native-toast-message": "^2.2.1",
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "~0.19.10",
-<<<<<<< HEAD
-    "tailwind-rn": "^4.2.0",
-=======
     "smartlearning": "file:",
->>>>>>> 8fe2223ff1e23c03188a797ab18f94fe5d451ee5
-    "uuid": "^11.0.2"
+    "tailwind-rn": "^4.2.0",
+    "uuid": "^11.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
