@@ -146,15 +146,15 @@ const Homework = () => {
                     </View>
                 }
 
-                <ChatInputSection
-                    isChatActive={isChatActive}
-                    setIsChatActive={setIsChatActive}
-                    onOpenCamera={handleOpenCamera}
-                    onOpenFilePicker={openFilePicker}
-                    ocrContents={ocrContents}
-                />
             </View>
 
+            <ChatInputSection
+                isChatActive={isChatActive}
+                setIsChatActive={setIsChatActive}
+                onOpenCamera={handleOpenCamera}
+                onOpenFilePicker={openFilePicker}
+                ocrContents={ocrContents}
+            />
             
 
             <ReactNativeModal isVisible={showRequestModal} onBackdropPress={() => setShowRequestModal(false)}>

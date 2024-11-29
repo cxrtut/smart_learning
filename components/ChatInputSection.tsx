@@ -24,10 +24,14 @@ const ChatInputSection = ({
     ocrContents?: string
 }) => {
 
+    
     const [isKeyboardActive, setIsKeyboardActive] = useState(false)
-    const [chatValue, setChatValue] = useState("")
+    const [chatValue, setChatValue] = useState(ocrContents || "")
     const [height, setHeight] = useState(0);
-
+    
+    // if(ocrContents) {
+    //     setChatValue(ocrContents)
+    // }
     const displayChat = () => {
         console.log("Chat Displayed")
         setChatValue("")
@@ -47,7 +51,7 @@ const ChatInputSection = ({
                 <View className='bg-[#afbcff] flex-[0.6]'>
                     <TextInput
                         multiline
-                        value={ocrContents||value}
+                        value={chatValue}
                         className='w-full flex flex-1 p-2 bg-[#bbc6ff]'
                         onChangeText={setChatValue}
                         onContentSizeChange={(event) => 
