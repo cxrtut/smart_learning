@@ -26,10 +26,6 @@ const ChatInputSection = ({
     const [fileContents, setfileContents] = useState("")
 
     const displayChat = () => {
-<<<<<<< HEAD
-=======
-        console.log("Chat Displayed")
->>>>>>> 5662c72a (update chat screen)
         setInputText!('')
 
         sendMessage!()
