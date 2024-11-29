@@ -103,8 +103,10 @@ const Homework = () => {
 
 
     const requestCameraPermission = async () => {
+        console.log("Requesting camera permission")
         const permissions = await Camera.requestCameraPermission()
         setCameraPermissionStatus(permissions)
+        console.log("Camera: ", permissions)
     }
     
     //Camera Permissions
