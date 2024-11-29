@@ -13,6 +13,9 @@ import { Camera, CameraPermissionStatus } from 'react-native-vision-camera';
 import OpenAI from 'openai';
 import { DarkTheme } from '@react-navigation/native';
 import { Platform } from 'react-native';
+import { Menu, MenuItem } from 'react-native-material-menu';
+import {WebView} from 'react-native-webview';
+import { ChatCompletionMessageParam } from 'openai/resources';
 
 interface Message{
     id: string;
@@ -53,6 +56,7 @@ const Homework = () => {
         // OpenAI response
         setLoading(true);
         try{
+            //@ts-ignore
             const response = await openai.chat.completions.create({
                 model: 'gpt-3.5-turbo',
                 messages: [
@@ -90,8 +94,7 @@ const Homework = () => {
                 borderRadius: 10,
                 marginVertical: 5,
                 maxWidth: "75%",
-            }}
-        >
+            }}>
         <Text style={{ color: item.sender === "user" ? "white" : "white" }}>
             {item.content}
         </Text>
