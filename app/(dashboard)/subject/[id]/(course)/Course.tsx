@@ -56,7 +56,7 @@ const Course = () => {
         // Navigate to the Course_result page with video data
         router.push({
           pathname: "/(dashboard)/subject/[id]/Course_result",
-          params: { video: JSON.stringify(videoData) },
+          params: { video: JSON.stringify(videoData), id: 1 },
         });
       } else {
         Alert.alert("No videos found", "Try another search query.");
@@ -130,7 +130,7 @@ const Course = () => {
       if (selectedVideo) {
         router.push({
           pathname: "/(dashboard)/subject/[id]/Course_result",
-          params: { video: JSON.stringify(selectedVideo) },
+          params: { video: JSON.stringify(selectedVideo), id:1 },
         });
       }
     }
@@ -146,7 +146,7 @@ const Course = () => {
       />
 
       {/* Search Bar , should search from the youtube Api*/}
-      <View className="flex-row items-center p-8">
+      <View className="flex-row items-center p-5">
         <TextInput
           ref={searchInputRef}
           placeholder="Search"
@@ -166,11 +166,11 @@ const Course = () => {
       {/* Combo Box (Picker) */}
 
 {/* The Combo Box(Picker) should show the video from the Database*/}
-      <View className="p-8">
+      <View className="p-5">
         <Text className="text-white text-lg font-bold mb-2">Select Topic</Text>
         <View className="bg-white border border-gray-300 rounded-lg mb-10">
           {loading ? (
-            <ActivityIndicator size="large" color={colors.SECONDARY} />
+            <ActivityIndicator size="large" />
           ) : fetchError ? (
             <Text className="text-center p-4 text-red-500">{fetchError}</Text>
           ) : (
