@@ -33,7 +33,7 @@ const Options = () => {
                         label='Quiz'
                         headingStyle='text-lg'
                         subTitle='Access all quizzes for this subject'
-                        onPressAction={() => {router.push(`/(dashboard)/subject/${id}/Quiz` as Href)}} 
+                        onPressAction={() => {router.push(`/(dashboard)/subject/${id}/(quiz)/SelectTopic` as Href)}} 
                     />
                 </View>
             </ScrollView>
