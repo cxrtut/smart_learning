@@ -27,7 +27,8 @@ const ChatInputSection = ({
     
     const [isKeyboardActive, setIsKeyboardActive] = useState(false)
     const [chatValue, setChatValue] = useState(ocrContents || "")
-    const [height, setHeight] = useState(0);
+    const [height, setHeight] = useState(35);
+    const [margin, setMargin] = useState(0);
     
     // if(ocrContents) {
     //     setChatValue(ocrContents)
@@ -46,18 +47,21 @@ const ChatInputSection = ({
             keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0} // Adjust based on header height
             className='flex'
         >
-        <View className='flex w-full p-3 m-0 items-center justify-between min-h-[110px]'>
+        <View className='flex w-full p-3 m-0 items-center justify-between min-h-[120px]'>
             <View className={`bg-[#afbcff] flex w-full flex-1 p-1 rounded-lg overflow-hidden`}>
                 <View className='bg-[#afbcff] flex-[0.6]'>
                     <TextInput
                         multiline
                         value={chatValue}
-                        className='w-full flex flex-1 p-2 bg-[#bbc6ff]'
+                        className='w-full flex-1 p-2 bg-[#bbc6ff]'
                         onChangeText={setChatValue}
-                        onContentSizeChange={(event) => 
-                            setHeight(event.nativeEvent.contentSize.height)
-                        }
-                        style={{ height: Math.max(35, height) }}
+                        onContentSizeChange={(event) => {
+                            const newHeight = Math.max(35, event.nativeEvent.contentSize.height);
+                            setHeight(newHeight);
+                            setMargin(Math.max(0, 120 - newHeight));
+                        
+                        }}
+                        style={{ height: height, backgroundColor: '#bbc6ff' }}
                         placeholder='Type a message...'
                         onChange={() => {
                             setIsKeyboardActive(true);

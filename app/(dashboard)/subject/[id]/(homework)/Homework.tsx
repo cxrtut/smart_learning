@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, Alert, TextInput } from 'react-native'
 import React, { useState } from 'react'
 import { Href, useLocalSearchParams, useRouter } from 'expo-router';
 import { useOnboarding } from '@/context/onboardingContext';
@@ -14,6 +14,8 @@ import * as ExpoMediaLibrary from 'expo-media-library'
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import { analyzeImage } from '@/utils';
+import { KeyboardAvoidingView } from 'react-native';
+import { Platform } from 'react-native';
 
 const Homework = () => {
     const { media, type, ocrContents } = useLocalSearchParams<{media: string, type: string, ocrContents: string}>();
@@ -26,11 +28,6 @@ const Homework = () => {
     const [fileType, setFileType] = useState("")
     const [fileContents, setfileContents] = useState("")
     const router = useRouter()
-
-    let pdfResource = {
-        uri: '',
-        cache: true
-    }
     
     const [cameraPermissionStatus, setCameraPermissionStatus] = 
     React.useState<CameraPermissionStatus>("not-determined")
@@ -38,20 +35,10 @@ const Homework = () => {
     const [mediaLibraryPermission, requestMediaLibraryPermission] = 
     ExpoMediaLibrary.usePermissions()
     
-    if(media && type) {
-        console.log(`Media: ${media} | Type: ${type}`)
-    }
     const requestCameraPermission = async () => {
         const permissions = await Camera.requestCameraPermission()
         setCameraPermissionStatus(permissions)
     }
-
-    const requestMediaPermission = async () => {
-        const permissions = await requestMediaLibraryPermission();
-        if (!permissions?.granted) {
-            Alert.alert("Permission Denied", "Media library access is required to proceed.");
-        }
-    };
 
     //Open File Picker
     const openFilePicker = async () => {
@@ -60,7 +47,6 @@ const Homework = () => {
             setFileName(doc.assets![0].name)
             setFileUri(doc.assets![0].uri)
             const file = doc.assets![0].uri
-            pdfResource.uri = file
             console.log("From file picker: ",file)
 
             const fileContent = await FileSystem.readAsStringAsync(file, { 
@@ -88,18 +74,20 @@ const Homework = () => {
 
         } catch (error) {
             console.log("OpenPDF Error: " ,error)
+            Alert.alert("Error", "An error occured while trying to open the file") 
         }
     }
     
     //Camera Permissions
     const handlePermissionRequest = async () => {
         setShowRequestModal(false)
-        requestCameraPermission();
-        await requestMediaLibraryPermission();
-
-        console.log(`Camera Permissions: ${cameraPermissionStatus}|`, `Media Permissions: ${mediaLibraryPermission?.status}`);
-
-        
+        if (cameraPermissionStatus === "not-determined" || !mediaLibraryPermission?.granted) {
+            requestCameraPermission();
+            await requestMediaLibraryPermission();
+            
+        } else {
+            console.log(`Camera Permissions: ${cameraPermissionStatus}|`, `Media Permissions: ${mediaLibraryPermission?.status}`);
+        }
     };
 
     //Open Camera
@@ -118,35 +106,27 @@ const Homework = () => {
             <View className='flex w-full'>
                 <CustomHeader  
                     title='Homework'
-                    subtitle={activeSubject?.subjectName}
+                    subtitle="Start a covresation with your AI teacher"
                     showBackButton={true}
                     headerStyles='pr-3'
                 />
-
-                {/* {fileName && (
-                    <View className='flex w-full items-center justify-center p-2'>
-                        <Text className='text-white'>
-                            {fileName}
-                        </Text>
-                        
-                    </View>
-                )} */}
-
-                {!isChatActive && <View className='flex items-center justify-center'>
-                    <Image
-                    source={images.onboarding13}
-                    style={{ width: 400, height: 650 }}
-                    resizeMode='contain'
-                    className='ml-[-30]'
-                    />
-                </View>}
-
-                {isChatActive && <View className='flex-1 items-center justify-center'>
-                    <Text className='text-white'>Chat Active</Text>
-                    </View>
-                }
-
             </View>
+
+
+            <View className='flex-1 items-center justify-center'>
+                {!isChatActive && (
+                    <Image
+                        source={images.onboarding13}
+                        className='w-3/4 h-3/4'
+                        resizeMode="contain"
+                    />
+                )}
+                {isChatActive && (
+                    <Text className='text-white text-center'>Chat Active</Text>
+                )}
+            </View>
+                
+
 
             <ChatInputSection
                 isChatActive={isChatActive}
@@ -157,7 +137,10 @@ const Homework = () => {
             />
             
 
-            <ReactNativeModal isVisible={showRequestModal} onBackdropPress={() => setShowRequestModal(false)}>
+            <ReactNativeModal 
+                isVisible={showRequestModal} 
+                onBackdropPress={() => setShowRequestModal(false)}
+            >
                 <View className='min-h-[200px] rounded-2xl p-5 bg-white flex'>
                     <Text className='text-md'>You must grant SmartLearning access to your camera in order to take a photo</Text>
                     <View className='flex flex-row justify-between mt-5'>
