@@ -1,5 +1,6 @@
 export default {
-    PRIMARY: '#5470FD'
+    PRIMARY: '#5470FD',
+    SECONDARY: '#a0affe'
 }
 
 const tintColorLight = '#0a7ea4';

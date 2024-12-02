@@ -1,7 +1,7 @@
 import { View, Text, Platform, Linking } from 'react-native'
 import React, { useRef, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Camera, useCameraDevice } from 'react-native-vision-camera'
+import { Camera, useCameraDevice, useCameraFormat } from 'react-native-vision-camera'
 import { Href, useRouter } from 'expo-router'
 import { BlurView } from 'expo-blur'
 import { TouchableHighlight } from 'react-native'
@@ -10,6 +10,8 @@ import CameraButton from '@/components/CameraButton'
 import { StyleSheet } from 'react-native'
 import { StatusBar } from 'react-native'
 import colors from '@/constants/colors'
+import * as FileSystem from 'expo-file-system';
+import { analyzeImage } from '@/utils'
 
 const CameraScreen = () => {
   const [cameraPosition, setCameraPosition] = useState<"front" | "back">("back");
@@ -20,6 +22,9 @@ const CameraScreen = () => {
 
   const camera = useRef<Camera>(null);
   const device = useCameraDevice(cameraPosition)
+  const format = useCameraFormat(device, [
+    { photoHdr: true },
+  ])
 
   const [zoom, setZoom] = React.useState(device?.neutralZoom);
   const [exposure, setExposure] = React.useState(0);
@@ -30,16 +35,29 @@ const CameraScreen = () => {
     try {
       if(camera.current == null) throw new Error("Camera ref is null")
 
-        console.log("Taking picture...")
-        const photo = await camera.current.takePhoto({
-          flash: flash,
-          enableShutterSound: true,
-        })
+      console.log("Taking picture...")
+      const photo = await camera.current.takePhoto({
+        flash: flash,
+        enableShutterSound: true,
+      })
+
+      console.log("Photo taken:", photo.path)
+      const fileUri = 'file://'+ photo.path
+      console.log("File URI: ", fileUri)
+
+      const fileContent = await FileSystem.readAsStringAsync(fileUri, { 
+        encoding: FileSystem.EncodingType.Base64 
+      })
+
+
+      const result = await analyzeImage(fileUri, fileContent)
+      const ocrContents = result.responses[0].textAnnotations[0].description
+
+        console.log("Photo taken:", photo.path)
 
         router.push({
-          pathname: '/(dashboard)/subject/[id]/(homework)/Homework',
-          //@ts-ignore
-          params: {media: photo.path, type: 'photo'}
+          pathname: '/(dashboard)/subject/[id]/(homework)/OCRConfirm',
+          params: {id: 1, media: photo.path, type: 'photo', ocrContents: ocrContents, imageUri: fileUri}
         })
     } catch (e) {
       console.log(e);
@@ -53,6 +71,8 @@ const CameraScreen = () => {
             ref={camera}
             style={{flex: 1}} 
             device={device!} 
+            format={format}
+            photoHdr={format?.supportsPhotoHdr}
             isActive
             zoom={zoom}
             resizeMode='cover'

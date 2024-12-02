@@ -21,19 +21,21 @@ const Options = () => {
                         label='Course'
                         headingStyle='text-lg'
                         subTitle='Access all courses for this subject'
-                        onPressAction={() => {router.push(`/(dashboard)/subject/${id}/(course)/Course` as Href)}} 
+                        onPressAction={() => {router.push(`/(dashboard)/subject/${id}/Course` as Href)}} 
                     />
                      <CustomCard 
                         label='Homework'
                         headingStyle='text-lg'
                         subTitle='Access all homework for this subject'
-                        onPressAction={() => {router.push(`/(dashboard)/subject/${id}/(homework)/Homework` as Href)}} 
+
+                        onPressAction={() => {router.push(`/(dashboard)/subject/${id}/Homework` as Href)}} 
+
                     />
                      <CustomCard 
                         label='Quiz'
                         headingStyle='text-lg'
                         subTitle='Access all quizzes for this subject'
-                        onPressAction={() => {router.push(`/(dashboard)/subject/${id}/Quiz`)}} 
+                        onPressAction={() => {router.push(`/(dashboard)/subject/${id}/Quiz` as Href)}} 
                     />
                 </View>
             </ScrollView>
