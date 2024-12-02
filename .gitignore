@@ -1,5 +1,5 @@
 node_modules/
-.idea
+.idea/
 .expo/
 dist/
 npm-debug.*
@@ -12,6 +12,14 @@ npm-debug.*
 web-build/
 # macOS
 .DS_Store
+android/
+
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+/.env
 
 .env
 .env.local
