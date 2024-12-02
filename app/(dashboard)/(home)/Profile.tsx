@@ -76,7 +76,7 @@ const Profile = () => {
         /> : <FontAwesome name="user" size={100} color="black" style={{ top: 10 }} />}
       </View>
 
-      <View className='mt-24 flex h-full w-full px-5'>
+      <View className='mt-24 flex h-full w-full px-6'>
         <CustomCard 
             label='Username'
             headingStyle='text-lg'
