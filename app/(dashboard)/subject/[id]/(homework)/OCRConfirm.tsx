@@ -58,7 +58,7 @@ const OCRConfirm = () => {
                         keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0} // Adjust based on header height
                         className='flex'
                     >
-                        <View className='flex w-full p-3 m-0 items-center min-h-[110px]'>
+                        <View className='flex w-full p-3 m-0 items-center min-h-[120px]'>
                             <View className={`bg-[#afbcff] flex w-full flex-1 p-1 rounded-lg overflow-hidden`}>
                                 <View className='bg-[#afbcff] flex-[0.6]'>
                                     <TextInput
