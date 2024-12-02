@@ -27,7 +27,6 @@ const ChatInputSection = ({
 
     const displayChat = () => {
         setInputText!('')
-
         sendMessage!()
     }
 
