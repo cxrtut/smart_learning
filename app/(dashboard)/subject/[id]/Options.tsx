@@ -21,13 +21,13 @@ const Options = () => {
                         label='Course'
                         headingStyle='text-lg'
                         subTitle='Access all courses for this subject'
-                        onPressAction={() => {router.push(`/(dashboard)/subject/${id}/Course`)}} 
+                        onPressAction={() => {router.push(`/(dashboard)/subject/${id}/(course)/Course` as Href)}}
                     />
                      <CustomCard 
                         label='Homework'
                         headingStyle='text-lg'
                         subTitle='Access all homework for this subject'
-                        onPressAction={() => {router.push(`/(dashboard)/subject/${id}/Homework`)}} 
+                        onPressAction={() => {}}
                     />
                      <CustomCard 
                         label='Quiz'

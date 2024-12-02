@@ -33,7 +33,6 @@ const Grade = () => {
         })
         return
     }
-    // console.log(user?.id)
 
     await fetchAPI('/(api)/(onboarding)/create', {
       method: 'POST',

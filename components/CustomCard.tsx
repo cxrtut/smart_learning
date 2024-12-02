@@ -7,19 +7,21 @@ const CustomCard = ({
   subTitle,
   headerImage, 
   headingStyle,
-  onPressAction
+  onPressAction,
+  customStyles
 }: {
   label: string,
   subTitle?: string,
   headingStyle?: string,
   headerImage?: ImageSourcePropType, 
-  onPressAction?: () => void
+  onPressAction?: () => void,
+  customStyles?: string
 }) => {
 
   return (
     <TouchableOpacity 
         onPress={onPressAction}
-        className='block rounded-lg shadow-sm bg-white shadow-indigo-100 w-full mb-2'
+        className={`block rounded-lg shadow-sm bg-white shadow-indigo-100 w-full mb-2 ${customStyles}`}
     >
       
         { headerImage && <Image 
