@@ -27,6 +27,7 @@ const Quiz = () => {
     });
 
     const generateQuiz = async () => {
+      console.log(process.env.EXPO_PUBLIC_OPENAI_API_KEY)
       setLoading(true);
       try {
         const response = await openai.chat.completions.create({
@@ -68,7 +69,7 @@ const Quiz = () => {
           throw new Error("Invalid data format from OpenAI.");
         }
       } catch (err) {
-        console.error("Error generating quiz:", err);
+        console.error("Error generating quiz:", JSON.stringify(err));
         setError("Failed to generate quiz. Please try again later.");
       } finally {
         setLoading(false);
@@ -122,10 +123,10 @@ const Quiz = () => {
           <Text style={{ color: "red" }}>{error}</Text>
         ) : showScore ? (
           <View style={{ alignItems: "center", marginTop: 20 }}>
-            <Text style={{ fontSize: 24, fontWeight: "bold", color: colors.TEXT_WHITE }}>
+            <Text style={{ fontSize: 24, fontWeight: "bold", color: 'white' }}>
               Quiz Completed!
             </Text>
-            <Text style={{ fontSize: 20, marginTop: 10, color: colors.TEXT_WHITE }}>
+            <Text style={{ fontSize: 20, marginTop: 10, color: 'white' }}>
               Your Score: {calculateScore()} / {questions.length}
             </Text>
             <TouchableOpacity
@@ -189,40 +190,38 @@ const Quiz = () => {
 
 const styles = StyleSheet.create({
   optionButton: {
-    backgroundColor: colors.SECONDARY,
     padding: 10,
     marginVertical: 5,
     borderRadius: 5,
   },
   selectedOption: {
-    backgroundColor: colors.PRIMARY_DARK,
+    backgroundColor: 'black',
   },
   optionText: {
-    color: colors.TEXT_WHITE,
+    color: 'white',
     textAlign: "center",
     fontSize: 16,
   },
   finishButton: {
-    backgroundColor: colors.PRIMARY_DARK,
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
-    marginTop: 20,
+    marginTop: -30,
   },
   finishButtonText: {
-    color: colors.TEXT_WHITE,
+    color: 'black',
     fontSize: 18,
     fontWeight: "bold",
   },
   doneButton: {
-    backgroundColor: colors.SECONDARY,
+    backgroundColor: 'white',
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
     marginTop: 20,
   },
   doneButtonText: {
-    color: colors.TEXT_WHITE,
+    color:'black',
     fontSize: 18,
     fontWeight: "bold",
   },
