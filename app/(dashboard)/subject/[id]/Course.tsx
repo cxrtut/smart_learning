@@ -16,12 +16,14 @@ import CustomHeader from "@/components/CustomHeader";
 import colors from "@/constants/colors";
 import { useOnboarding } from "@/context/onboardingContext";
 import { getVideoUrl } from "@/utils";
+import { useUser } from '@clerk/clerk-expo';
 
 const Course = () => {
+
+  const {user} = useUser();
   const router = useRouter();
   const { activeSubject } = useOnboarding();
   const searchInputRef = useRef<TextInput>(null);
-
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedOption, setSelectedOption] = useState("");
   const [videos, setVideos] = useState<
@@ -30,7 +32,7 @@ const Course = () => {
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [videoId, setVideoId] = useState("");
-
+  const[ databasevideo ,setDatabasevideo] = useState<{title: string; video_url: string; description: string }[]>([]);
   const YOUTUBE_API_KEY = process.env.EXPO_PUBLIC_YOUTUBE_API_KEY as string;
 
   // Function to fetch videos based on search query
@@ -67,6 +69,43 @@ const Course = () => {
     }
   };
 
+  //Getting the video from the database
+  useEffect(() => {
+    const loadVideoUrls = async () => {
+      if (!user?.id) return;
+      setLoading(true);
+      setFetchError(null);
+
+      try {
+        
+        const data = await getVideoUrl(user?.id);
+
+        const subjectVideos = data.filter(
+          (databasevideo) => databasevideo.subject_name === activeSubject?.subjectName
+        );
+
+        if (subjectVideos.length > 0) {
+          setVideos(
+            subjectVideos.map((databasevideo) => ({
+              ...databasevideo,
+            }))
+          );
+          console.log("Database videos fetched:", subjectVideos);
+        } else {
+          setFetchError("No videos available for this subject.");
+        }
+      } catch (error) {
+        console.error("Error loading videos", error);
+        setFetchError("Failed to load video data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadVideoUrls();
+  }, [user?.id, activeSubject?.subjectName]);
+
+
   // Debounced search function
   const handleSearchChange = debounce((query: string) => {
     setSearchQuery(query);
@@ -83,9 +122,11 @@ const Course = () => {
 
   // Handle option select
   const handleOptionSelect = (itemValue: string) => {
+
     setSelectedOption(itemValue);
     if (itemValue) {
       const selectedVideo = videos.find((v) => v.title === itemValue);
+
       if (selectedVideo) {
         router.push({
           pathname: "/(dashboard)/subject/[id]/Course_result",
@@ -104,7 +145,7 @@ const Course = () => {
         headerStyles="pr-3"
       />
 
-      {/* Search Bar */}
+      {/* Search Bar , should search from the youtube Api*/}
       <View className="flex-row items-center p-8">
         <TextInput
           ref={searchInputRef}
@@ -123,6 +164,8 @@ const Course = () => {
       </View>
 
       {/* Combo Box (Picker) */}
+
+{/* The Combo Box(Picker) should show the video from the Database*/}
       <View className="p-8">
         <Text className="text-white text-lg font-bold mb-2">Select Topic</Text>
         <View className="bg-white border border-gray-300 rounded-lg mb-10">
@@ -137,8 +180,8 @@ const Course = () => {
               style={{ height: 50, color: "black" }}
             >
               <Picker.Item label="Select an option" value="" />
-              {videos.map((video, index) => (
-                <Picker.Item key={index} label={video.title} value={video.title} />
+              {videos.map((databasevideo, index) => (
+                <Picker.Item key={index} label={databasevideo.title} value={databasevideo.title} />
               ))}
             </Picker>
           )}
