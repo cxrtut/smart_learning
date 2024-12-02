@@ -55,12 +55,9 @@ const Home = () => {
   
     const loadSubjects = async () => {
       setLoading(true);
-      console.log("Ranges: ", gradeRange, schoolLevel);
       try {
         const data = await getSubjectsByGradeAndSchool(gradeRange, schoolLevel);
         setResultSubjects(data);
-        console.log(data)
-        console.log("Data: ", data[0].subject_name);
       } catch (error) {
         console.error("Error loading subjects:", error);
       } finally {
@@ -110,7 +107,7 @@ const Home = () => {
                 const subject_id = subject.subject_id
                 // console.log({subject_id, subject_name})
                 onRedirectHandler({subjectName: subject_name, subjectId: subject_id})
-              }}
+              }} 
             />
           ))}
         </View>
