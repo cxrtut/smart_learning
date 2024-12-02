@@ -102,7 +102,12 @@ const Home = () => {
               headingStyle='text-xl'
               subTitle='Find more about services for your subject'
               label={subject.subject_name}
-              onPressAction={() => {onRedirectHandler({subjectName: subject.subject, subjectId: subject.id})}} 
+              onPressAction={() => {
+                const subject_name = subject.subject_name
+                const subject_id = subject.subject_id
+                // console.log({subject_id, subject_name})
+                onRedirectHandler({subjectName: subject_name, subjectId: subject_id})
+              }} 
             />
           ))}
         </View>
