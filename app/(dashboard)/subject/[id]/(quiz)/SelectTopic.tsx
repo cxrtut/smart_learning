@@ -56,7 +56,7 @@ const SelectTopic = () => {
                             key={index}
                             label={topic.title}
                             headingStyle='text-lg'
-                            subTitle={`Start quiz  (5 questions)  `}
+                            subTitle={`Start quiz  (4 questions)  `}
                             onPressAction={
                               () => {
                                 console.log("Our Topic: ",topic.title)

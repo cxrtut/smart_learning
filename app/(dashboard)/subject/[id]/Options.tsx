@@ -27,7 +27,7 @@ const Options = () => {
                         label='Homework'
                         headingStyle='text-lg'
                         subTitle='Access all homework for this subject'
-                        onPressAction={() => {}}
+                        onPressAction={() => {router.push(`/(dashboard)/subject/${id}/(homework)/Homework` as Href)}}
                     />
                      <CustomCard 
                         label='Quiz'
