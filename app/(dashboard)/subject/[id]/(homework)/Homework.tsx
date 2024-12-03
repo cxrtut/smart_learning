@@ -10,16 +10,11 @@ import * as ExpoMediaLibrary from 'expo-media-library'
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import { analyzeImage } from '@/utils';
-import { View, Text, TextInput, TouchableOpacity, Alert, Switch, ScrollView, FlatList, KeyboardAvoidingView } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { Href, router, useLocalSearchParams, useRouter } from 'expo-router';
+import { View, Text, TouchableOpacity, Alert, FlatList } from 'react-native'
+import React, { useState } from 'react'
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Camera, CameraPermissionStatus } from 'react-native-vision-camera';
 import OpenAI from 'openai';
-import { DarkTheme } from '@react-navigation/native';
-import { Platform } from 'react-native';
-import { Menu, MenuItem } from 'react-native-material-menu';
-import {WebView} from 'react-native-webview';
-import { ChatCompletionMessageParam } from 'openai/resources';
 
 interface Message{
     id: string;
