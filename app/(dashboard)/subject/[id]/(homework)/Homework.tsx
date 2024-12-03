@@ -18,7 +18,6 @@ import OpenAI from 'openai';
 import { DarkTheme } from '@react-navigation/native';
 import { Platform } from 'react-native';
 import { Menu, MenuItem } from 'react-native-material-menu';
-import {WebView} from 'react-native-webview';
 import { ChatCompletionMessageParam } from 'openai/resources';
 
 interface Message{

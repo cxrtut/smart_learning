@@ -55,7 +55,7 @@ const Course = () => {
 
         // Navigate to the Course_result page with video data
         router.push({
-          pathname: "/(dashboard)/subject/[id]/Course_result",
+          pathname: "/(dashboard)/subject/[id]/(course)/Course_result",
           params: { video: JSON.stringify(videoData), id: 1 },
         });
       } else {
@@ -129,7 +129,7 @@ const Course = () => {
 
       if (selectedVideo) {
         router.push({
-          pathname: "/(dashboard)/subject/[id]/Course_result",
+          pathname: "/(dashboard)/subject/[id]/(course)/Course_result",
           params: { video: JSON.stringify(selectedVideo), id:1 },
         });
       }
