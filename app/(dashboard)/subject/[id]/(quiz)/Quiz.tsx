@@ -27,7 +27,6 @@ const Quiz = () => {
     });
 
     const generateQuiz = async () => {
-      console.log(process.env.EXPO_PUBLIC_OPENAI_API_KEY)
       setLoading(true);
       try {
         const response = await openai.chat.completions.create({
