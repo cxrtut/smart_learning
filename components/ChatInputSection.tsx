@@ -5,6 +5,8 @@ import { useRouter } from 'expo-router'
 import { Image } from 'react-native';
 import { images } from '@/constants';
 import colors from '@/constants/colors';
+import * as DocumentPicker from 'expo-document-picker';
+import * as FileSystem from 'expo-file-system';
 
 const ChatInputSection = ({
     isChatActive, 
@@ -13,7 +15,9 @@ const ChatInputSection = ({
     onOpenFilePicker,
     value,
     setInputText,
-    ocrContents
+    ocrContents,
+    onContinue,
+    sendMessage
 } : {
     isChatActive: boolean,
     setIsChatActive: React.Dispatch<React.SetStateAction<boolean>>,
@@ -21,25 +25,26 @@ const ChatInputSection = ({
     onOpenFilePicker?: () => void,
     value?: string,
     setInputText?: Dispatch<SetStateAction<string>>,
-    ocrContents?: string
+    ocrContents?: string,
+    onContinue?: () => void,
+    sendMessage?: () => Promise<void>
 }) => {
 
-    
     const [isKeyboardActive, setIsKeyboardActive] = useState(false)
-    const [chatValue, setChatValue] = useState(ocrContents || "")
+    const [fileName, setFileName] = useState("")
+    const [fileContents, setfileContents] = useState("")
+    // const [chatValue, setChatValue] = useState(ocrContents || "" || value)
     const [height, setHeight] = useState(35);
     const [margin, setMargin] = useState(0);
-    
-    // if(ocrContents) {
-    //     setChatValue(ocrContents)
-    // }
+
     const displayChat = () => {
         console.log("Chat Displayed")
-        setChatValue("")
+        // setInputText!('')
+        sendMessage!()
+        // setChatValue("")
     }
 
     const router = useRouter()
-
 
     return (
         <KeyboardAvoidingView
@@ -52,9 +57,11 @@ const ChatInputSection = ({
                 <View className='bg-[#afbcff] flex-[0.6]'>
                     <TextInput
                         multiline
-                        value={chatValue}
+                        value={value}
                         className='w-full flex-1 p-2 bg-[#bbc6ff]'
-                        onChangeText={setChatValue}
+                        onChangeText={(text) => {
+                            setInputText!(text)
+                        }}
                         onContentSizeChange={(event) => {
                             const newHeight = Math.max(35, event.nativeEvent.contentSize.height);
                             setHeight(newHeight);
@@ -88,7 +95,17 @@ const ChatInputSection = ({
                             </TouchableOpacity>
                         </View>
                     )}
-                    <TouchableOpacity onPress={isChatActive ? displayChat : () => console.log("not chat active")} className='pr-1'>
+                    <TouchableOpacity
+                        onPressIn={() => {
+                            setIsChatActive(true)}
+                        } 
+                        onPress={
+                            isChatActive ?
+                            displayChat : 
+                            () => console.log("not chat active")
+                        } 
+                        className='pr-1'
+                    >
                         <ArrowRight size={24} color={'gray'} />
                     </TouchableOpacity>
                 </View>
