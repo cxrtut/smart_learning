@@ -1,99 +1,131 @@
-import { View, Text, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform } from 'react-native'
-import React, { Dispatch, SetStateAction, useState } from 'react'
-import { ArrowRight, Camera as Cam, File, Plus } from "lucide-react-native";
-import { useRouter } from 'expo-router'
-import { Image } from 'react-native';
-import { images } from '@/constants';
-import colors from '@/constants/colors';
+import { View, Text, KeyboardAvoidingView, Platform, TextInput, TouchableOpacity, Alert } from 'react-native'
+import React, { useState } from 'react'
+import AntDesign from '@expo/vector-icons/AntDesign';
+
+import UploadFileBtn from './UploadFileBtn';
+import { useFileContext } from '@/context/FileProvider';
+import OpenCameraBtn from './OpenCameraBtn';
+import { Message, useMessageContext } from '@/context/MessageProvider';
+import OpenAI from 'openai';
+
+const openai = new OpenAI({
+    apiKey: process.env.EXPO_PUBLIC_OPENAI_API_KEY,
+});
 
 const ChatInputSection = ({
-    isChatActive, 
     setIsChatActive,
-    onOpenCamera,
-    onOpenFilePicker,
-    value,
-    setInputText,
-    ocrContents
+    isChatActive
 } : {
-    isChatActive: boolean,
-    setIsChatActive: React.Dispatch<React.SetStateAction<boolean>>,
-    onOpenCamera?: () => void,
-    onOpenFilePicker?: () => void,
-    value?: string,
-    setInputText?: Dispatch<SetStateAction<string>>,
-    ocrContents?: string
+    isChatActive: boolean;
+    setIsChatActive: React.Dispatch<React.SetStateAction<boolean>>
 }) => {
+    const {ocrFileContents} = useFileContext()
+    const {setMessages, messages} = useMessageContext()
 
-    
-    const [isKeyboardActive, setIsKeyboardActive] = useState(false)
-    const [chatValue, setChatValue] = useState(ocrContents || "")
     const [height, setHeight] = useState(35);
     const [margin, setMargin] = useState(0);
-    
-    // if(ocrContents) {
-    //     setChatValue(ocrContents)
-    // }
-    const displayChat = () => {
-        console.log("Chat Displayed")
-        setChatValue("")
+    const [isKeyboardActive, setIsKeyboardActive] = useState(false)
+    const [inputTextValue, setInputTextValue] = useState(ocrFileContents || "")
+
+    const sendMessage = async () => {
+        const userMessage: Message = { id: Date.now().toString(), type: 'text', content: inputTextValue, sender: 'user'};
+        setMessages((prev) => [...prev, userMessage]);
+
+        setInputTextValue('')
+
+        // OpenAI response
+        try {
+            //@ts-ignore
+            const response = await openai.chat.completions.create({
+                model: 'gpt-3.5-turbo',
+                messages: [
+                    { role: 'system', content: 'You are a helpful assistant.'},
+                    ...messages.map((msg) => ({
+                        role: msg.sender === 'user' ? 'user' : 'assistant',
+                        content: msg.content,
+                    })),
+                    { role: 'user', content: inputTextValue},
+                ],
+            })
+
+            const aiMessage: Message = {
+                id: Date.now().toString(),
+                type: 'text',
+                content: response.choices[0]?.message?.content || 'Sorry, I did not understand that...',
+                sender: 'system',
+            };
+            setMessages((prev) => [...prev, aiMessage])
+
+        } catch (error: any) {
+            console.error('Failed to send message to OpenAI', error);
+            const aiMessage: Message = { 
+                id: Date.now().toString(), 
+                type: 'text', 
+                content: "Sorry, I'm having trouble connecting to OpenAI. Please try again later.", 
+                sender: 'system'
+            }
+            setMessages((prev) => [...prev, aiMessage])
+            Alert.alert('Failed to send message to OpenAI', error.message);
+
+        }
     }
 
-    const router = useRouter()
-
+    const displayChat = () => {
+        if(inputTextValue.trim().length === 0) return;
+        inputTextValue && sendMessage() 
+        setIsChatActive(true)
+    }
 
     return (
         <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0} // Adjust based on header height
-            className='flex'
-        >
-        <View className='flex w-full p-3 m-0 items-center justify-between min-h-[120px]'>
-            <View className={`bg-[#afbcff] flex w-full flex-1 p-1 rounded-lg overflow-hidden`}>
-                <View className='bg-[#afbcff] flex-[0.6]'>
-                    <TextInput
-                        multiline
-                        value={chatValue}
-                        className='w-full flex-1 p-2 bg-[#bbc6ff]'
-                        onChangeText={setChatValue}
-                        onContentSizeChange={(event) => {
-                            const newHeight = Math.max(35, event.nativeEvent.contentSize.height);
-                            setHeight(newHeight);
-                            setMargin(Math.max(0, 120 - newHeight));
-                        
-                        }}
-                        style={{ height: height, backgroundColor: '#bbc6ff' }}
-                        placeholder='Type a message...'
-                        onChange={() => {
-                            setIsKeyboardActive(true);
-                        }}
-                    />
-                </View>
-                <View className='bg-[#afbcff] flex-[0.4] flex-row items-center justify-between'>
-                    {isKeyboardActive ? (
-                        <TouchableOpacity 
-                            onPress={() => setIsKeyboardActive(false)} 
-                            className='pl-2'
-                        >
-                            <Plus size={24} color={'gray'}  />
-                        </TouchableOpacity>
-                    ) : (
-                        <View className='flex flex-row items-center'>
-                            <TouchableOpacity onPress={onOpenFilePicker} className='flex flex-row items-center pl-2'>
-                                <File size={24} color={'gray'} />
-                                <Text className='text-xs ml-1 text-gray-600'>Upload File</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={onOpenCamera} className='flex flex-row items-center pl-2'>
-                                <Cam size={24} color={'gray'} />
-                                <Text className='text-xs ml-1 text-gray-600'>Take Photo</Text>
-                            </TouchableOpacity>
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0} // Adjust based on header height
+                className='flex'
+            >
+                <View className='flex w-full p-3 m-0 items-center justify-between min-h-[120px]'>
+                    <View className={`bg-[#afbcff] flex w-full flex-1 p-1 rounded-lg overflow-hidden`}>
+                        <View className='bg-[#afbcff] flex-[0.6]'>
+                            <TextInput
+                                value={inputTextValue!}
+                                onChangeText={(text) => setInputTextValue(text)}
+                                multiline
+                                className='w-full flex-1 p-2 bg-[#bbc6ff]'
+                                onContentSizeChange={(event) => {
+                                    const newHeight = Math.max(35, event.nativeEvent.contentSize.height);
+                                    setHeight(newHeight);
+                                    setMargin(Math.max(0, 120 - margin));
+                                
+                                }}
+                                style={{ height: height, backgroundColor: '#bbc6ff' }}
+                                placeholder='Type a message...'
+                            />
                         </View>
-                    )}
-                    <TouchableOpacity onPress={isChatActive ? displayChat : () => console.log("not chat active")} className='pr-1'>
-                        <ArrowRight size={24} color={'gray'} />
-                    </TouchableOpacity>
+                        <View className='bg-[#afbcff] flex-[0.4] flex-row items-center justify-between'>
+                            {isKeyboardActive ? (
+                                <TouchableOpacity 
+                                    onPress={() => setIsKeyboardActive(false)} 
+                                    className='pl-2'
+                                >
+                                    <AntDesign name="plus" size={20} color="grey" />
+                                </TouchableOpacity>
+                            ) : (
+                                <View className='flex flex-row items-center'>
+                                    <UploadFileBtn />
+
+                                    <OpenCameraBtn />
+                                </View>
+                            )}
+
+                        <TouchableOpacity
+                            className='pr-1'
+                            onPress={() => displayChat()}
+                        >
+                            <AntDesign name="arrowright" size={20} color="gray" />
+                        </TouchableOpacity>
+                        </View>
+                    </View>
                 </View>
-            </View>
-        </View>
+
         </KeyboardAvoidingView>
     )
 }

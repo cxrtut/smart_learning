@@ -1,80 +1,138 @@
-import { View, Text, ScrollView } from 'react-native'
+import { View, Text, ScrollView, Alert, ActivityIndicator, Image, Pressable } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { useUser } from '@clerk/clerk-expo';
-import { useOnboarding } from '@/context/onboardingContext';
-import { getVideoTitle } from '@/utils';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import CustomHeader from '@/components/CustomHeader';
-import colors from '@/constants/colors';
-import CustomCard from '@/components/CustomCard';
-import { Href, router } from 'expo-router';
+import CustomHeader from '@/components/CustomeHeader'
+import { useAuthContext } from '@/context/AuthProvider'
+import { useOnboarding } from '@/context/OnboardingProvider'
+import CustomCard from '@/components/CustomCard'
+import { Href, RelativePathString, router, useLocalSearchParams } from 'expo-router'
+import { supabase } from '@/lib/supabase'
 
 const SelectTopic = () => {
-    const { user } = useUser();
-    const { activeSubject } = useOnboarding();
-    const [topics, setTopics] = useState<{ title: string;}[]>([])
-    const [loading, setLoading] = useState(true)
-    const [fetchError, setFetchError] = useState<string | null>(null);
+    const {user} = useAuthContext()
+    const {activeSubject} = useOnboarding()
+    const {id, sujectName} = useLocalSearchParams();
+    const [isLoading, setIsLoading] = useState(true)
+    const [topics, setTopics] = useState<{subject_id: string, title: string}[]>([])
+    const [error, setError] = useState(false)
+    const [isEmpty, setIsEmpty] = useState(false)
+    
 
     useEffect(() => {
-        const loadVideoTitle = async () => {
-          if (!user?.id) return;
-          setLoading(true);
-          setFetchError(null); // Reset error state before each fetch
-          try {
-            const data = await getVideoTitle(user?.id);
-    
-            // Filter videos based on the active subject
-            const subjectVideoTitles = data.filter((title) => title.subject_name === activeSubject?.subjectName);
-    
-            if (subjectVideoTitles.length > 0) {
-              setTopics(subjectVideoTitles);
-            } else {
-              setFetchError("No videos available for this subject.");
+        if (!user) {
+            router.push('/(auth)/SignIn' as Href)
+        }
+
+        const fetchData = async () => {
+            try {
+                setIsLoading(true)
+                const { data, error } = await supabase
+                    .from('SubjectVideos')
+                    .select('subject_id, title')
+                    .eq('subject_id', id);
+
+                if (error) {
+                    setError(true)
+                    Alert.alert('Error', error.message)
+                    router.back();
+                }
+
+                if (data) {
+                    if (data.length === 0) {
+                        setIsEmpty(true)
+                    }
+                    setTopics(data)
+                }
+                
+            } catch (error: any) {
+                setError(true)
+                console.error(error)
+                Alert.alert('Error', error.message)
+                
+            } finally {
+                setIsLoading(false)
             }
-          } catch (error) {
-            console.error("Error loading videos", error);
-            setFetchError("Failed to load video data.");
-          } finally {
-            setLoading(false);
-          }
-        };
-    
-        loadVideoTitle();
-    }, [user?.id, activeSubject?.subjectName]);
+        }
+        fetchData()
+
+    }, [])
+
+    if(isLoading) {
+        return (
+            <View className='flex items-center justify-center h-full w-full'>
+                <ActivityIndicator size='large' color='#0000ff' />
+            </View>
+        )
+    }
+
+    if(error) {
+        return (
+            <View className='flex-1 justify-center items-center p-5 bg-slate-300'>
+                <Image
+                    source={require('@/assets/images/error_image.png')}
+                    style={{aspectRatio: 1, height: '50%', resizeMode: 'contain'}}
+                />
+                <Text className='text-lg mt-2 text-gray-700'>
+                    Failed to load subjects
+                </Text>
+                <Pressable 
+                    style={{backgroundColor: '#5470FD'}}
+                    className='p-4 mt-4 rounded-full w-full'
+                    onPress={() => router.back()}
+                >
+                    <Text className='text-white text-center text-md font-bold'>
+                        Try Again
+                    </Text>
+                </Pressable>
+            </View>
+        )
+    }
+
+    if(isEmpty) {
+        return (
+            <View className='flex-1 justify-center items-center p-5 bg-slate-300'>
+                <Image
+                    source={require('@/assets/images/fail_image.png')}
+                    style={{height: "50%",aspectRatio: 1, resizeMode: "contain"}}
+                />
+                <Text className='text-lg mt-2 text-gray-700 text-center px-5 font-light mb-3'>
+                    Ohh No!, There's no quiz topics available, Try again later.
+                </Text>
+                <Pressable 
+                    style={{backgroundColor: '#5470FD'}}
+                    className='p-4 mt-4 rounded-full w-full'
+                    onPress={() => router.back()}
+                >
+                    <Text className='text-white text-center text-md font-medium'>
+                        Try Again
+                    </Text>
+                </Pressable>
+            </View>
+        )
+    }
 
     return (
-        <SafeAreaView style={{backgroundColor: colors.PRIMARY}} className='flex h-full w-full'>
+        <View style={{flex: 1, height: '100%', width: '100%', backgroundColor: "#cbd5e1", padding: 0}}>
             <CustomHeader 
-                title='Please select a topic'
+                title={activeSubject?.subjectName as string}
+                subtitle='Please select a topic'
                 showBackButton={true}
             />
-            <ScrollView className='h-full p-5 pb-3'>
-                <View className='flex items-center justify-center pb-3'>
-                    {topics.map((topic: any, index: number) => (
-                        <CustomCard 
-                            key={index}
-                            label={topic.title}
-                            headingStyle='text-lg'
-                            subTitle={`Start quiz  (4 questions)  `}
-                            onPressAction={
-                              () => {
-                                console.log("Our Topic: ",topic.title)
-                                const realTopic = topic.title
-                                router.push({
-                                  pathname: `/(dashboard)/subject/[id]/(quiz)/Quiz`,
-                                  params: { id: index, topic: realTopic}
-                                })
-                              }
-                            } 
-                        />
-                    ))}
-                </View>
+            <ScrollView style={{height: '100%', padding: 15, paddingBottom: 5}}>
+                {topics.map((topic, index) => (
+                    <CustomCard
+                        key={index}
+                        label={topic.title}
+                        subTitle='Read and understand instructions before starting'
+                        onPressAction={() => {
+                            router.push({
+                                pathname: `/subject/${id}/StartQuiz` as RelativePathString,
+                                params: {subjectName: activeSubject?.subjectName, topic: topic.title}
+                            })
+                        }}
+                    />
+                ))}
             </ScrollView>
-            <View className='h-[12%]'>
-
-            </View>
-            </SafeAreaView>
+        </View>
     )
 }
 

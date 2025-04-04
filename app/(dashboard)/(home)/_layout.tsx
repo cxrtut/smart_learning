@@ -1,10 +1,8 @@
-import { View, Text } from 'react-native'
-import Ionicons from 'react-native-vector-icons/Ionicons'
-import Home from './Home'
-import Profile from './Profile'
-import colors from '@/constants/colors'
-import React from 'react'
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import React, { Profiler } from 'react'
+import Ionicons from '@expo/vector-icons/Ionicons'
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import Home from './Home';
+import Profile from './Profile';
 
 const Tab = createBottomTabNavigator()
 
@@ -21,13 +19,13 @@ const HomeRoot = () => {
             iconName = focused ? 'person' : 'person-outline'
           }
 
-          return <Ionicons name={iconName!} size={size} color={color} />
+          return <Ionicons name={iconName as keyof typeof Ionicons.glyphMap} size={22} color={color} />
         },
         tabBarStyle:{
           position: 'absolute',
           bottom: 25,
-          left: 20,
-          right: 20,
+          left: 0,
+          right: 0,
           elevation: 5,
           backgroundColor: 'white',
           borderRadius: 50,
@@ -36,12 +34,14 @@ const HomeRoot = () => {
           shadowColor: '#7F5DF0',
           shadowOpacity: 0.25,
           shadowOffset: { width: 0, height: 15 },
-          shadowRadius: 3.5
+          shadowRadius: 3.5,
+          marginHorizontal: 20,
+          paddingTop: 10,
         },
         headerShown: false,
-        tabBarActiveTintColor: colors.PRIMARY,
+        tabBarActiveTintColor: '#5470FD',
         tabBarInactiveTintColor: "black",
-        tabBarShowLabel: false,
+        tabBarShowLabel: true,
         
       })}
     >

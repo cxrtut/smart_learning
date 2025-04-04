@@ -1,150 +1,291 @@
-import { View, Text, TouchableOpacity, TextInput, Image } from 'react-native'
-import React, { useCallback, useState } from 'react'
-import { Href, router, useRouter } from 'expo-router'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import colors from '@/constants/colors'
-import { useOAuth, useSignIn } from '@clerk/clerk-expo'
-import Toast from 'react-native-toast-message'
-import CustomButton from '@/components/CustomButton'
-import { icons } from '@/constants'
-import * as Linking from 'expo-linking'
-import CustomInput from '@/components/CustomInput'
+import { View, Text, TextInput, Image, StatusBar, TouchableOpacity, Alert, ActivityIndicator, AppState } from 'react-native'
+import React, { useState } from 'react'
+import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated'
+import { Href, router } from 'expo-router'
+import AntDesign from '@expo/vector-icons/AntDesign';
+import { supabase } from '@/lib/supabase';
+import { useAuthContext } from '@/context/AuthProvider';
+import { makeRedirectUri } from "expo-auth-session";
+import * as QueryParams from "expo-auth-session/build/QueryParams";
+import * as WebBrowser from "expo-web-browser";
+
+AppState.addEventListener('change', (state) => {
+    if (state === 'active') {
+      supabase.auth.startAutoRefresh()
+    } else {
+      supabase.auth.stopAutoRefresh()
+    }
+})
+
+WebBrowser.maybeCompleteAuthSession(); // required for web only
+const redirectTo = makeRedirectUri({
+    scheme: 'com.tshiamotodd.sidetest',
+});
+
+const createSessionFromUrl = async (url: string) => {
+    const { params, errorCode } = QueryParams.getQueryParams(url);
+  
+    if (errorCode) throw new Error(errorCode);
+    const { access_token, refresh_token } = params;
+
+    console.log({access_token, refresh_token})
+  
+    if (!access_token) return;
+  
+    const { data, error } = await supabase.auth.setSession({
+      access_token,
+      refresh_token,
+    });
+    if (error) throw error;
+    console.log("Session data: ",{data})
+    console.log("Session user: ", data.session?.user)
+    return data.session;
+};
+
+
+  
 
 const SignIn = () => {
-    const { signIn, setActive, isLoaded } = useSignIn()
-    const router = useRouter()
+    const {setUsername} = useAuthContext()
+    const [isLoading, setIsLoading] = useState(false)
     const [form, setForm] = useState({
         email: '',
         password: ''
     })
 
-    const { startOAuthFlow } = useOAuth({ strategy: 'oauth_google' })
+    const performOAuth = async () => {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: "google",
+          options: {
+            redirectTo: `${redirectTo}SignIn`,
+            skipBrowserRedirect: true,
+          },
+        });
+    
+        if (error) throw error;
+      
+        if(data) {
+            console.log("Data from signInWithOAuth: ", {data})
+    
+            const res = await WebBrowser.openAuthSessionAsync(
+                data?.url ?? "",
+                redirectTo,
+            );
+    
+    
+            if (res.type === "success") {
+                setIsLoading(true)
+                console.log("Response from browser",{res})
+    
+                const { url } = res;
+                console.log("Browser respose url", {url})
+                const session = await createSessionFromUrl(url);
+    
+                console.log("Session user: ", session?.user.id)
+    
+                if(session?.user) {
+                    const {data: userData, error: userError} = await supabase
+                    .from('User')
+                    .select('username')
+                    .eq('id', session.user.id)
+                    .single()
+    
+                    console.log({userData})
+    
+                    if(userData == null) {
+                        const {data: createUserData, error: userError} = await supabase.from('User').insert([{
+                            id: session.user.id,
+                            email: session.user.email,
+                            username: session.user.user_metadata.name
+                        }]).select()
+        
+                        console.log(createUserData)
+        
+                        setUsername!(session.user.user_metadata.name)
 
-    const onSignInPress = useCallback(async () => {
-        if (!isLoaded) return
-    
-        try {
-          const signInAttempt = await signIn.create({
-            identifier: form.email,
-            password: form.password,
-          })
-    
-          if (signInAttempt.status === 'complete') {
-            await setActive({ session: signInAttempt.createdSessionId })
-            router.replace('/(dashboard)/(home)/Home' as Href)
-          } else {
-            Toast.show({
-                type: 'error',
-                text1: 'Error',
-                text2: 'Invalid email or password'
-            })
-          }
-        } catch (err: any) {
-            Toast.show({
-                type: 'error',
-                text1: 'Error',
-                text2: err.errors[0].longMessage
-            })
+                        if(createUserData) {
+                            setIsLoading(false)
+                            router.push('/(onboarding)/School' as Href)
+                        }
+                    } else {
+                        setUsername!(userData?.username)
+                        setIsLoading(false)
+                        router.dismissAll()
+                        router.replace('/Home')
+                    }
+                
+                }
+            }
         }
-      }, [isLoaded, form.email, form.password])
+      
+    };
 
-    const onOAuthSignInPress = useCallback(async () => {
+    const signInWithSupabase = async () => {
         try {
-            const { createdSessionId, signIn, signUp, setActive } = await startOAuthFlow({
-                redirectUrl: Linking.createURL('/(dashboard)/(home)/Home', { scheme: 'myapp' }),
+            setIsLoading(true)
+            const {data, error} = await supabase.auth.signInWithPassword({
+                email: form.email,
+                password: form.password
             })
 
-            if (createdSessionId) {
-                await setActive!({ session: createdSessionId })
-            } else {
-                //Proceed for now
+            if(data.session){
+                const formattedEmail:string = form.email.toLowerCase().trim().toString()
+                console.log(formattedEmail)
+                const {data: userData, error: userError} = await supabase
+                .from('User')
+                .select('username')
+                .eq('email', formattedEmail)
+                .single()
+
+                console.log(userData)
+                if(userError) {
+                    console.log(userError)
+                }
+                setUsername!(userData?.username)
             }
 
-        } catch (err) {
-            console.error('OAuth error', err)
+            if (error) {
+                Alert.alert('Error', error.message)
+                return
+            } else {
+                setIsLoading(false)
+                router.push('/(dashboard)/(home)/Home' as Href)
+            }
+
+        } catch (error) {
+            Alert.alert('Error', error as string)
+            console.log(error)
+        } finally {
+            setIsLoading(false)
         }
-    }, [])
+    }
 
     return (
-        <SafeAreaView 
-            style={{backgroundColor: colors.PRIMARY}}
-            className='flex h-full items-center justify-between py-3 pb-10'
-        >
-            <View className='flex pl-3 items-start gap-y-14 w-full'>
-                <Text 
-                className='text-start p-3 pl-5 font-bold text-white text-3xl'
+        <View className='bg-white h-full w-full'>
+            <StatusBar barStyle={'light-content'} />
+        <Image
+            className='h-full w-full absolute'
+            source={require('@/assets/images/background.png')}
+        />
+        {/* Lights */}
+        <View className='flex-row justify-around w-full absolute'>
+            <Animated.Image
+                entering={FadeInUp.delay(200).duration(1000).springify()}
+                className='h-[225] w-[90]'
+                source={require('@/assets/images/light.png')}
+            />
+            <Animated.Image
+                entering={FadeInUp.delay(400).duration(1000).springify()}
+                className='h-[160] w-[65]'
+                source={require('@/assets/images/light.png')}
+            />
+        </View>
+
+        {/* Titile and form */}
+        <View className='h-full w-full flex justify-around pt-52 pb-10'>
+            {/* Title */}
+            <View className='flex items-center'>
+                <Animated.Text
+                    entering={FadeInUp.delay(100).duration(1000).springify()} 
+                    className='text-white font-bold tracking-wider text-4xl'
                 >
                     Smart Learning
-                </Text>
+                </Animated.Text>
+                <Animated.Text 
+                    entering={FadeInUp.delay(100).duration(1000).springify()} 
+                    className='text-white text-lg font-light px-7'
+                >
+                    Login to your account
+                </Animated.Text>
+            </View>
+            {/* Form */}
+            <View className='flex items-center mx-4 space-y-4'>
 
-                <View className='w-full pl-5 flex gap-2'>
-                    <Text className='pl-3 text-white font-semibold text-lg'>
-                        Log in to your account
-                    </Text>
-                    <CustomInput
+                <Animated.View
+                    className='w-full'
+                    entering={FadeInDown.delay(400).duration(1000).springify()}
+                >
+                    <TouchableOpacity 
+                        className='bg-white shadow-md shadow-zinc-300 rounded-full py-4 mt-5'
+                        onPress={performOAuth}
+                    >
+                    <View className='flex flex-row items-center justify-center'>
+                        <Image
+                            source={require('@/assets/images/google.png')}
+                            className='w-8 h-8'
+                            resizeMode='contain'
+                        />
+                            {isLoading ? (
+                                <ActivityIndicator size='large' color='white'/>
+                            ): (
+                                <Text className='text-lg font-rubik-medium text-black-300 ml-2'>Continue With Google</Text>
+                            )}
+                    </View>
+
+                    </TouchableOpacity>
+                </Animated.View>
+
+                <Animated.View 
+                    entering={FadeInDown.duration(1000).springify()}
+                    className='flex-row items-center border border-slate-300 gap-x-2 bg-black/5 p-5 rounded-full w-full'
+                >
+                    <AntDesign name="mail" size={20} color="gray" />
+                    <TextInput
                         value={form.email}
                         onChangeText={newEmail => setForm({...form, email: newEmail})}
                         placeholder='Email'
-                        textContentType='emailAddress'
-                        placeholderTextColor={'white'}
+                        placeholderTextColor='gray'
+                        className='text-md'
                     />
+                </Animated.View>
 
-                    <CustomInput
+                <Animated.View 
+                    entering={FadeInDown.delay(200).duration(1000).springify()} 
+                    className='flex-row items-center border border-slate-300 gap-x-2 bg-black/5 p-5 rounded-full w-full'
+                >
+                    <AntDesign name="unlock" size={20} color="gray" />
+                    <TextInput
                         onChangeText={newPassword => setForm({...form, password: newPassword})}
                         value={form.password}
                         placeholder='Password'
-                        textContentType='password'
-                        placeholderTextColor={'white'}
+                        placeholderTextColor='gray'
                         secureTextEntry={true}
-                    />
 
-                    <View className='w-full flex items-end px-12 pt-3 mb-4'>
-                        <TouchableOpacity
-                            onPress={() => {
-                                router.push('/(auth)/ForgotPassword' as Href)
-                            }}
-                        >
-                            <Text>Forgot Password?</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <CustomButton
-                        title={"Log In with Google"}
-                        className="mt-5 w-[90%] shadow-none bg-white"
-                        IconLeft={() => (
-                            <Image
-                                source={icons.google}
-                                resizeMode="contain"
-                                className="w-5 h-5 mx-2"  
-                            />
-                        )}
-                        bgVariant="outline"
-                        textVariant="primary"
-                        onPress={onOAuthSignInPress}
                     />
-                    
-                </View>
-            </View>
+                </Animated.View>
 
-            <View className='w-full gap-y-5 flex flex-col items-center'>
-                <TouchableOpacity
-                    onPress={() => {
-                        router.push('/(auth)/SignUp' as Href)
-                    }}
+                <Animated.View 
+                    className='w-full'
+                    entering={FadeInDown.delay(400).duration(1000).springify()}
                 >
-                    <Text className='text-white'>
-                        Don't have an account? Create one 
-                    </Text>
-                </TouchableOpacity>
-                <CustomButton
-                    title={"Sign In"}
-                    className="w-[70%] mt-[25%] shadow-none bg-white"
-                    bgVariant="outline"
-                    textVariant="secondary"
-                    onPress={onSignInPress}
-                />
+                    <TouchableOpacity
+                        className='w-full items-center justify-center bg-sky-400 p-3 rounded-full mb-3'
+                        onPress={signInWithSupabase}
+                    >
+                        {isLoading ? (
+                            <ActivityIndicator size='large' color='white' />
+                        ): (
+                            <Text className='text-xl font-bold text-white text-center'>Login</Text>
+                        )}
+                    </TouchableOpacity>
+                </Animated.View>
 
+                <Animated.View 
+                    className='flex-row justify-center'
+                    entering={FadeInDown.delay(600).duration(1000).springify()}
+                >
+                    <Text>Don't have an account?</Text>
+                    <TouchableOpacity
+                        onPress={() => {
+                            router.push('/(auth)/SignUp' as Href)
+                        }}
+                    >
+                        <Text className='text-sky-600'>Sign Up</Text>
+                    </TouchableOpacity>
+                </Animated.View>
             </View>
-        </SafeAreaView>
+        </View>
+        </View>
     )
 }
 

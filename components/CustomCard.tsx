@@ -8,11 +8,13 @@ const CustomCard = ({
   headerImage, 
   headingStyle,
   onPressAction,
+  isUrl,
   customStyles
 }: {
   label: string,
   subTitle?: string,
   headingStyle?: string,
+  isUrl?: boolean,
   headerImage?: ImageSourcePropType, 
   onPressAction?: () => void,
   customStyles?: string

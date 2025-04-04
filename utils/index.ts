@@ -1,62 +1,52 @@
-import { neon } from '@neondatabase/serverless';
-import {
-    grade10_12Subjects,
-    grade1_3Subjects,
-    grade4_6Subjects,
-    grade7Subjects,
-    grade8_9Subjects
-} from "@/constants";
+import { supabase } from "@/lib/supabase";
+import * as FileSystem from 'expo-file-system';
 
-// Function to fetch subjects by grade and school level
 export const getSubjectsByGradeAndSchool = async (grade: string, school: string) => {
     try {
-        const sql = neon(`${process.env.EXPO_PUBLIC_DATABASE_URL as string}`);
-        // Ensure the query awaits the asynchronous call
-        const subjects = await sql`
-            SELECT subject_name, subject_id 
-            FROM "Subject" 
-            WHERE grade_range = ${grade} 
-            AND school_level = ${school};
-        ` as {subject_name: string, subject_id: string}[];
+        const {data, error} = await supabase.from('Subject')
+        .select('subject_name, subject_id')
+        .eq('grade_range', grade)
+        .eq('school_level', school);
 
-        // Return the subjects as a JSON string (if needed)
-        return subjects;
+        if (error) {
+            console.error(error)
+            throw error;
+        }
+
+        return data;
     } catch (error) {
-        console.error("Error fetching subjects:", error);
-        throw error; // Optionally, you can handle the error more gracefully here
+        console.log("Error fetching subjects:", error);
+        throw new Error("Failed to fetch subjects. Please try again later.");
     }
-    
 };
 
-export const getVideoTitle= async (id: string) => {
+export const getSubjectVideosBySubjectId = async (subjectId: string) => {
     try {
-        const sql = neon(`${process.env.EXPO_PUBLIC_DATABASE_URL as string}`);
-        const response = await sql`
-            SELECT  
-                s.subject_name, 
-                sv.title 
-            FROM 
-                "Onboarding" o
-            JOIN 
-                "Subject" s ON s.grade_range = o.grade_range AND s.school_level = o.school_level
-            JOIN 
-                "SubjectVideos" sv ON sv.subject_id = s.subject_id
-            WHERE 
-                o.user_id = ${id};
-        ` as {subject_name: string; title: string; }[];
+        const {data, error} = await supabase.from('SubjectVideos')
+        .select('title, description, video_url')
+        .eq('subject_id', subjectId);
 
-        return response;
+        if (error) {
+            console.error(error)
+            throw error;
+        }
+
+        return data;
     } catch (error) {
-        console.error("Error fetching video URLs:", error);
-        throw new Error("Failed to fetch video data. Please try again later.");
+        console.log("Error fetching videos:", error);
+        throw new Error("Failed to fetch videos. Please try again later.");
     }
-};
+}
 
-export const analyzeImage = async (imageUri: string, base64Image: string) => {
+export const analyzeImage = async (imageUri: string) => {
     try {
         if(!imageUri) {
             return JSON.stringify({error: "No image provided"});
         }
+
+        const fileContent = await FileSystem.readAsStringAsync(imageUri, { 
+            encoding: FileSystem.EncodingType.Base64 
+        });
 
         const apiKey = process.env.EXPO_PUBLIC_CLOUD_VISION_API_KEY;
         const apiUrl = `https://vision.googleapis.com/v1/images:annotate?key=${apiKey}`;
@@ -65,7 +55,7 @@ export const analyzeImage = async (imageUri: string, base64Image: string) => {
             requests: [
                 {
                     image: {
-                        content: base64Image
+                        content: fileContent
                     },
                     features: [
                         {
@@ -94,3 +84,30 @@ export const analyzeImage = async (imageUri: string, base64Image: string) => {
     }
 }
 
+export const extractYouTubeVideoId = (url: string): string | null => {
+    const videoIdRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const match = url.match(videoIdRegex);
+    return match ? match[1] : null;
+}
+
+export const fetchYouTubeThumbnail = async (videoId: string | null) => {
+    if (!videoId) return null;
+
+    try {
+        const response = await fetch(
+            `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${process.env.EXPO_PUBLIC_YOUTUBE_API_KEY}`
+        );
+        const data = await response.json();
+
+        if (data.items && data.items.length > 0) {
+            const thumbnails = data.items[0].snippet.thumbnails;
+
+            // Return the highest quality available
+            return thumbnails.high?.url;
+        }
+    } catch (error) {
+        console.error("Error fetching YouTube thumbnail:", error);
+    }
+
+    return null;
+};

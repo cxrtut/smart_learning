@@ -1,22 +1,15 @@
-import { View, Text, ScrollView, ActivityIndicator } from 'react-native'
+import { View, Text, FlatList, Alert, Image, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import colors from '@/constants/colors'
-import CustomHeader from '@/components/CustomHeader'
+import CustomHeader from '@/components/CustomeHeader'
 import CustomCard from '@/components/CustomCard'
-import { ActiveSubject, useOnboarding } from '@/context/onboardingContext'
-import { getSubjectsByGradeAndSchool } from '@/utils'
+import { useAuthContext } from '@/context/AuthProvider'
+import { ActiveSubject, useOnboarding } from '@/context/OnboardingProvider'
+import { supabase } from '@/lib/supabase'
 import { Href, router } from 'expo-router'
-import { useUser } from '@clerk/clerk-expo'
-import { fetchAPI, useFetch } from '@/lib/fetch'
-import { images } from '@/constants'
-
-
+import { getSubjectsByGradeAndSchool } from '@/utils'
 
 const Home = () => {
-  const {user} = useUser();
-  const name = "John Doe"
-
+  const {user, username, isAuthenticated} = useAuthContext();
   const {
     gradeRange, 
     schoolLevel, 
@@ -25,97 +18,107 @@ const Home = () => {
     setGradeRange
   } = useOnboarding();
 
+
   const [loading, setLoading] = useState(true)
   const [resultSubjects, setResultSubjects] = useState<{ subject_name: string; subject_id: string; }[]>([]);
 
-
-  useEffect(()  => {
-    if (!user) {
-      router.push('/(auth)/SignIn' as Href)
-    }
-
-    const fetchData = async () => {
-      try {
-        const data = await fetchAPI(`/(api)/(onboarding)/${user?.id}`)
-        setGradeRange(data.data[0].grade_range)
-        setSchoolLevel(data.data[0].school_level)
-      } catch (error) {
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchData()
-    
-  }, [user, router, setGradeRange, setSchoolLevel])
-
   useEffect(() => {
-    // Ensure gradeRange and schoolLevel are set before running this useEffect
-    if (!gradeRange || !schoolLevel) return;
+    const fetchDataAndLoadSubjects = async () => {
+      if (!user) {
+        router.push('/(auth)/SignIn' as Href);
+        return;
+      }
   
-    const loadSubjects = async () => {
       setLoading(true);
+  
       try {
-        const data = await getSubjectsByGradeAndSchool(gradeRange, schoolLevel);
-        setResultSubjects(data);
-      } catch (error) {
-        console.error("Error loading subjects:", error);
+        // Fetch onboarding data
+        const { data: onboardingData, error: onboardingError } = await supabase
+          .from('Onboarding')
+          .select('school_level, grade_range')
+          .eq('user_id', user?.id)
+          .single();
+  
+        if (onboardingError) {
+          console.error(onboardingError);
+          Alert.alert('Onboarding Error', onboardingError.message);
+          return;
+        }
+  
+        console.log(onboardingData);
+  
+        if (onboardingData) {
+          setGradeRange(onboardingData.grade_range);
+          setSchoolLevel(onboardingData.school_level);
+  
+          // Fetch subjects based on fetched onboarding data
+          const subjectsData = await getSubjectsByGradeAndSchool(
+            onboardingData.grade_range,
+            onboardingData.school_level
+          );
+
+          if(subjectsData.length === 0) {
+
+          } else {
+
+            setResultSubjects(subjectsData);
+
+          }
+  
+        }
+      } catch (error: any) {
+        console.error("Error:", error);
+        Alert.alert('Error', error.message || String(error));
       } finally {
         setLoading(false);
       }
     };
   
-    loadSubjects();
-  }, [gradeRange, schoolLevel])
-
-  if (loading) {
-    return (
-      <SafeAreaView style={{backgroundColor: colors.PRIMARY}} className='flex h-full w-full'>
-        <CustomHeader 
-          title={`Hello ${name}`}
-          showBackButton={false}
-        />
-        <View className='flex-1 items-center justify-center'>
-          <ActivityIndicator size='large' color="#fff" />
-        </View>
-      </SafeAreaView>
-    )
-  }
+    fetchDataAndLoadSubjects();
+  }, [user, router, setGradeRange, setSchoolLevel, setResultSubjects]);
 
   const onRedirectHandler = ({subjectName, subjectId}: {subjectName: string, subjectId: string}) => {
     setActiveSubject!({subjectName, subjectId} as ActiveSubject)
     router.push(`/(dashboard)/subject/${subjectId}/Options` as Href)
   }
 
+  if (loading) {
+    return (
+      <View className='flex-1 items-center justify-center '> 
+        <ActivityIndicator size='large' color='blue' />
+      </View>
+    )
+  }
   return (
-    <SafeAreaView style={{backgroundColor: colors.PRIMARY}} className='flex h-full w-full'>
+    <View className='p-0 bg-slate-300 w-full h-full'>
       <CustomHeader 
-        title={`Hello ${user?.firstName}`}
-        showBackButton={false}
+        title='Dashboard' 
+        subtitle={`Welcome back, ${username}`}
+        showBackButton={false} 
       />
-      <ScrollView className='h-full p-5 pb-3'>
-        <View className='flex items-center justify-center pb-3'>
-          {resultSubjects!.map((subject: any) => (
+      <View className='flex flex-col p-4 mb-5 h-[90%]'>
+        <FlatList
+          data={resultSubjects}
+          renderItem={({ item }) => (
             <CustomCard 
-              key={subject.subject_id}
-              headerImage={images.bg_3} 
-              headingStyle='text-xl'
-              subTitle='Find more about services for your subject'
-              label={subject.subject_name}
+              label={item.subject_name} 
+              subTitle={"Find more about services for your subject"} 
+              headerImage={require('@/assets/images/bg-3.jpg')} 
               onPressAction={() => {
-                const subject_name = subject.subject_name
-                const subject_id = subject.subject_id
+                const subject_name = item.subject_name
+                const subject_id = item.subject_id
                 // console.log({subject_id, subject_name})
                 onRedirectHandler({subjectName: subject_name, subjectId: subject_id})
-              }} 
+              }}
             />
-          ))}
-        </View>
-      </ScrollView>
-      <View className='h-[12%]'>
+          )}
+        />
+        <View className='h-[10%]'>
 
+        </View>
       </View>
-    </SafeAreaView>
+
+    </View>
   )
 }
 
